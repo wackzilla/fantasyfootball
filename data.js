@@ -19,7 +19,7 @@ const LEAGUE_NAME = "Your League Name Here";
 const ANNOUNCEMENT = {
   active: true,
   text: "Week 1 contest is live — click here to enter on DraftKings!",
-  link: "https://imgur.com/8kYUOdx"
+  link: "https://i.imgur.com/8kYUOdx_d.webp?maxwidth=760&fidelity=grand"
 };
 
 // --------------------------------------------------------------
