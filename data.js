@@ -21,7 +21,7 @@ const LEAGUE_NAME = "Your League Name Here";
 // add Banner rows to the sheet at all.
 // --------------------------------------------------------------
 const ANNOUNCEMENT = {
-  active: true,
+  active: false,
   text: "Week 1 contest is live — click here to enter on DraftKings!",
   link: "https://www.draftkings.com/"
 };
