@@ -39,21 +39,35 @@ const POINTS_BY_PLACE = {
 
 // --------------------------------------------------------------
 // PHOTOS — just type a username, not a full link
-// For the "League Leader" sheet row and each coach's "Photo" column
-// (see the GOOGLE SHEET section below), you can just type a coach's
-// DraftKings username instead of pasting the whole GitHub link, e.g.
-// typing "DaBears4141" is the same as pasting:
-//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_dabears4141.jpg
+// There are two different kinds of photo, since they're shown in two
+// different shapes on the page:
 //
-// That means every photo file in the repo needs to be named
-// "currentleader_" + their username (all lowercase) + ".jpg" — e.g.
-// currentleader_dabears4141.jpg — uploaded to the repo root. If you'd
+//   League Leader (the sheet row) -> the wide photo next to the
+//   season standings table. Not cropped to a circle, so a normal
+//   upright photo works fine as-is.
+//
+//   Photo (the per-coach column) -> the small circular headshot on
+//   "This Week's Podium." Crop this one square with the face centered
+//   before uploading, so it doesn't get awkwardly cut off.
+//
+// For either one, just type that coach's username instead of pasting
+// the whole GitHub link, e.g. typing "DaBears4141" for League Leader
+// is the same as pasting:
+//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_dabears4141.jpg
+// and typing "DaBears4141" in the Photo column is the same as pasting:
+//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_dabears4141.jpg
+//
+// That means every photo file uploaded to the repo needs to be named
+// to match — "currentleader_" + username for League Leader photos,
+// "profpic_" + username for podium photos, both all lowercase, e.g.
+// currentleader_dabears4141.jpg and profpic_dabears4141.jpg. If you'd
 // rather paste a full link instead (a different file type, a photo
-// hosted somewhere else, etc.), that still works too — anything
-// starting with "http" is used as-is instead of being turned into a
-// username-based link.
+// hosted somewhere else, etc.), that still works too, for either one —
+// anything starting with "http" is used as-is instead of being turned
+// into a username-based link.
 // --------------------------------------------------------------
 const PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_";
+const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_";
 
 // --------------------------------------------------------------
 // GOOGLE SHEET

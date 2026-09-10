@@ -131,18 +131,19 @@ function extractBannerRows(rows) {
 // an existing sheet unless you want to.)
 function extractLeagueLeaderPhoto(rows) {
   const row = rows.find(r => /^(league\s+leader|photo\s+url)$/i.test((r[0] || "").trim()));
-  return row ? resolvePhotoUrl((row[1] || "").trim()) : "";
+  const base = typeof PHOTO_REPO_BASE !== "undefined" ? PHOTO_REPO_BASE : "";
+  return row ? resolvePhotoUrl((row[1] || "").trim(), base) : "";
 }
 
-// Turns a sheet's Photo cell into an actual image URL. If it's already
+// Turns a sheet's photo cell into an actual image URL. If it's already
 // a full link (starts with http), it's used as-is. Otherwise it's
-// treated as a username and turned into this repo's standard photo
-// link — see PHOTO_REPO_BASE in data.js.
-function resolvePhotoUrl(value) {
+// treated as a username and turned into a standard photo link using
+// the given base — PHOTO_REPO_BASE for League Leader, or
+// PODIUM_PHOTO_REPO_BASE for the per-coach Photo column (see data.js).
+function resolvePhotoUrl(value, base) {
   const v = (value || "").trim();
   if (!v) return "";
   if (/^https?:\/\//i.test(v)) return v;
-  const base = typeof PHOTO_REPO_BASE !== "undefined" ? PHOTO_REPO_BASE : "";
   const slug = v.toLowerCase().replace(/[^a-z0-9_-]/g, "");
   return base ? base + slug + ".jpg" : "";
 }
@@ -205,7 +206,8 @@ function renderStandings(rows, head, body) {
       if (!cell.place) return sum;
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
-    const photoUrl = photoColIndex !== -1 ? resolvePhotoUrl(r[photoColIndex]) : "";
+    const podiumBase = typeof PODIUM_PHOTO_REPO_BASE !== "undefined" ? PODIUM_PHOTO_REPO_BASE : "";
+    const photoUrl = photoColIndex !== -1 ? resolvePhotoUrl(r[photoColIndex], podiumBase) : "";
     return { name, weekCells, total, photoUrl };
   });
 
