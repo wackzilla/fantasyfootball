@@ -109,6 +109,7 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //   Banner Countdown | 2026-09-14 13:00:00
 //   League Leader    | DaBears4141
 //   Commish Message  | Don't forget to set your lineup by Sunday!
+//   Commish Subject  | Week 3 Power Rankings + a PSA
 //
 // Banner Countdown is optional — add it to show a live "Locks in
 // 1d 04h 09m 30s" countdown next to the banner text, ticking down by
@@ -123,9 +124,12 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // show no photo. (This row used to be called "Photo URL" — that name
 // still works too, no need to rename it in an existing sheet.)
 //
-// For Commish Message, whatever you type shows in a code-block/
-// terminal-style box on the page. Leave the row out (or the cell
-// blank) to hide that section entirely.
+// For Commish Message, whatever you type shows on the page as the
+// body of a fake email in a retro Windows-98-style window, addressed
+// to "All Coaches," CC'd to Roger Goodell, and signed off by "The
+// Commish." Commish Subject sets that email's Subject line (leave it
+// blank and it just says "League Update"). Leave the Commish Message
+// row out (or the cell blank) to hide that section entirely.
 //
 // Standings/podium photos don't need a column at all — they're looked
 // up automatically from each coach's name (see PHOTOS, above). A

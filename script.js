@@ -86,16 +86,19 @@ function formatCountdown(ms) {
   return minutes + "m " + pad(seconds) + "s";
 }
 
-// Shows the "Message from the Commish" terminal box if a Commish
-// Message was set in the sheet; hides it if not.
-function applyCommishMessage(message) {
+// Shows the "Message from the Commish" email-style box if a Commish
+// Message was set in the sheet; hides it if not. The Subject line is
+// optional too — falls back to a generic subject if left blank.
+function applyCommishMessage(commish) {
   const section = document.getElementById("commish-section");
   const text = document.getElementById("commish-message");
-  if (!message) {
+  const subject = document.getElementById("commish-subject");
+  if (!commish || !commish.message) {
     section.hidden = true;
     return;
   }
-  text.textContent = message;
+  text.textContent = commish.message;
+  subject.textContent = commish.subject || "League Update";
   section.hidden = false;
 }
 
@@ -154,7 +157,10 @@ async function loadStandings() {
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
     applyPhoto(extractLeagueLeaderPhoto(rows));
-    applyCommishMessage(extractCommishMessage(rows));
+    applyCommishMessage({
+      message: extractCommishMessage(rows),
+      subject: extractCommishSubject(rows),
+    });
 
     renderStandings(rows, head, body);
   } catch (err) {
@@ -236,6 +242,15 @@ function extractCommishMessage(rows) {
   return row ? (row[1] || "").trim() : "";
 }
 
+// Looks for a row shaped like "Commish Subject" anywhere in the sheet
+// and returns its value, used as the email's Subject line — or "" if
+// there isn't one (applyCommishMessage falls back to a generic
+// subject in that case).
+function extractCommishSubject(rows) {
+  const row = rows.find(r => /^commish\s+subject$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
 function renderStandings(rows, head, body) {
   // The standings table starts at whichever row's first cell says
   // "Coach" — everything before that (e.g. Banner rows) is ignored here.
@@ -262,7 +277,7 @@ function renderStandings(rows, head, body) {
     return first !== ""
       && !/^banner\s+(active|text|link|countdown)$/i.test(first)
       && !/^(league\s+leader|photo\s+url)$/i.test(first)
-      && !/^commish\s+message$/i.test(first);
+      && !/^commish\s+(message|subject)$/i.test(first);
   });
 
   // Optional "Photo" column, one per coach. Not required anymore — by
