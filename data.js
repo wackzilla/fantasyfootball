@@ -38,6 +38,25 @@ const POINTS_BY_PLACE = {
 };
 
 // --------------------------------------------------------------
+// SITE PASSCODE (very basic — read this before relying on it)
+// If set, visitors must enter this code once per browser before
+// they can see the site. Leave as "" (empty quotes) to disable
+// the passcode screen entirely.
+//
+// IMPORTANT: this is NOT real security. This is a public static
+// site with no server, login system, or database behind it —
+// anyone who opens their browser's "View Page Source" can read
+// this code directly out of the page in about five seconds, the
+// same way you're reading it here. It's a speed bump to keep
+// search engines and people who stumble onto the link by accident
+// out, not protection against anyone who's actually trying to get
+// in. Since nothing on this site is sensitive (it's fantasy
+// football standings), that trade-off is fine — just don't treat
+// this as if it were a real password.
+// --------------------------------------------------------------
+const SITE_PASSCODE = "1941";
+
+// --------------------------------------------------------------
 // GOOGLE SHEET
 // Paste your sheet's CSV export link here. See SETUP-GUIDE.md,
 // Part 8, for exactly how to get this link — it must be the CSV
@@ -59,15 +78,21 @@ const POINTS_BY_PLACE = {
 //
 // Optionally, add rows ABOVE the "Coach" row to control the
 // banner from the sheet instead of the ANNOUNCEMENT block above,
-// and/or to show a photo to the left of the standings table:
+// to show a photo to the left of the standings table, and/or to
+// show a "message from the Commish" text box on the page:
 //
-//   Banner Active | TRUE
-//   Banner Text   | Week 3 contest is live!
-//   Banner Link   | https://www.draftkings.com/...
-//   Photo URL     | https://raw.githubusercontent.com/you/repo/main/photo.jpg
+//   Banner Active   | TRUE
+//   Banner Text     | Week 3 contest is live!
+//   Banner Link     | https://www.draftkings.com/...
+//   Photo URL       | https://raw.githubusercontent.com/you/repo/main/photo.jpg
+//   Commish Message | Don't forget to set your lineup by Sunday!
 //
 // For Photo URL, upload an image file to your GitHub repo (same as
 // any other file — Add file -> Upload files), then use its raw
 // link. Leave the row out (or the cell blank) to show no photo.
+//
+// For Commish Message, whatever you type shows in a code-block/
+// terminal-style box on the page. Leave the row out (or the cell
+// blank) to hide that section entirely.
 // --------------------------------------------------------------
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/export?format=csv&gid=1064215180";

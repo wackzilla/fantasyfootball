@@ -254,6 +254,129 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
 .trophy-badge.trophy-2 { background: var(--silver-bg); color: var(--silver-text); }
 .trophy-badge.trophy-3 { background: var(--bronze-bg); color: var(--bronze-text); }
 
+/* Passcode gate */
+.passcode-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.passcode-gate[hidden] {
+  display: none;
+}
+
+.passcode-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px 28px;
+  max-width: 320px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+.passcode-lock {
+  font-size: 2rem;
+  margin: 0 0 4px;
+}
+
+.passcode-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.2rem;
+}
+
+.passcode-hint {
+  margin: 0 0 18px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.passcode-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 1.6rem;
+  text-align: center;
+  letter-spacing: 0.5em;
+  padding: 10px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.passcode-submit {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.passcode-submit:hover {
+  background: var(--accent-dark);
+}
+
+.passcode-error {
+  margin: 12px 0 0;
+  color: #c0392b;
+  font-size: 0.85rem;
+}
+
+/* Commish message — deliberately a fixed dark "terminal" look
+   regardless of site theme, since that's the whole bit. */
+.commish-section {
+  max-width: 1100px;
+  margin: 32px auto 0;
+}
+
+.commish-section h2 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.terminal {
+  background: #0c0f0a;
+  color: #4be24b;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  padding: 18px 20px;
+  border-radius: 10px;
+  border: 1px solid #1c2418;
+  white-space: pre-wrap;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+.terminal-text::before {
+  content: "> ";
+  opacity: 0.7;
+}
+
+.cursor {
+  display: inline-block;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
 .site-footer {
   max-width: 960px;
   margin: 32px auto 0;

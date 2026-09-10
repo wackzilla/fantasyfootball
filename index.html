@@ -8,6 +8,19 @@
 </head>
 <body>
 
+  <div id="passcode-gate" class="passcode-gate">
+    <div class="passcode-card">
+      <p class="passcode-lock">🔒</p>
+      <h2>Enter Passcode</h2>
+      <p class="passcode-hint">Ask the commissioner if you don't have it.</p>
+      <form id="passcode-form" autocomplete="off">
+        <input id="passcode-input" class="passcode-input" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="••••" autofocus>
+        <button type="submit" class="passcode-submit">Enter</button>
+      </form>
+      <p id="passcode-error" class="passcode-error" hidden>Wrong code — try again.</p>
+    </div>
+  </div>
+
   <header class="site-header">
     <h1 id="league-name">Viva la Fútbol</h1>
     <p class="subtitle">Football is back!!!</p>
@@ -61,6 +74,13 @@
         </div>
       </section>
     </div>
+
+    <section id="commish-section" class="commish-section" hidden>
+      <h2>A Message from the Commish</h2>
+      <div class="terminal">
+        <span id="commish-message" class="terminal-text"></span><span class="cursor">&#9608;</span>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">

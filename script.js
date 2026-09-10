@@ -3,6 +3,8 @@
 // and your coaches + weekly results live in your Google Sheet.
 
 document.addEventListener("DOMContentLoaded", () => {
+  initPasscodeGate();
+
   // League name
   document.getElementById("league-name").textContent = LEAGUE_NAME;
   document.title = LEAGUE_NAME + " — Standings";
@@ -15,6 +17,53 @@ document.addEventListener("DOMContentLoaded", () => {
   loadStandings();
 });
 
+// --------------------------------------------------------------
+// Passcode gate. NOTE: this is a light speed bump, not real
+// security — see the comment on SITE_PASSCODE in data.js.
+// --------------------------------------------------------------
+const PASSCODE_STORAGE_KEY = "fflSiteUnlocked";
+
+function initPasscodeGate() {
+  const gate = document.getElementById("passcode-gate");
+  if (!gate) return;
+
+  const passcode = (typeof SITE_PASSCODE !== "undefined" ? SITE_PASSCODE : "").trim();
+  if (!passcode) {
+    gate.hidden = true;
+    return;
+  }
+
+  let alreadyUnlocked = false;
+  try {
+    alreadyUnlocked = localStorage.getItem(PASSCODE_STORAGE_KEY) === passcode;
+  } catch (e) {
+    // localStorage unavailable (private browsing, etc.) — gate just
+    // won't remember between visits, which is fine, it's not real
+    // security anyway.
+  }
+
+  if (alreadyUnlocked) {
+    gate.hidden = true;
+    return;
+  }
+
+  const form = document.getElementById("passcode-form");
+  const input = document.getElementById("passcode-input");
+  const error = document.getElementById("passcode-error");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (input.value.trim() === passcode) {
+      try { localStorage.setItem(PASSCODE_STORAGE_KEY, passcode); } catch (e) {}
+      gate.hidden = true;
+    } else {
+      error.hidden = false;
+      input.value = "";
+      input.focus();
+    }
+  });
+}
+
 function applyBanner(ann) {
   const banner = document.getElementById("banner");
   if (ann && ann.active && ann.text && ann.link) {
@@ -24,6 +73,19 @@ function applyBanner(ann) {
   } else {
     banner.hidden = true;
   }
+}
+
+// Shows the "Message from the Commish" terminal box if a Commish
+// Message was set in the sheet; hides it if not.
+function applyCommishMessage(message) {
+  const section = document.getElementById("commish-section");
+  const text = document.getElementById("commish-message");
+  if (!message) {
+    section.hidden = true;
+    return;
+  }
+  text.textContent = message;
+  section.hidden = false;
 }
 
 // Shows the photo panel if a Photo URL was set in the sheet; hides it
@@ -75,12 +137,13 @@ async function loadStandings() {
     const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
     if (rows.length < 2) throw new Error("Sheet looks empty");
 
-    // Optional Banner rows and a Photo URL row anywhere above the
-    // "Coach" header row let the sheet control those too — see
-    // SETUP-GUIDE.md, Part 8.
+    // Optional Banner rows, a Photo URL row, and a Commish Message row
+    // anywhere above the "Coach" header row let the sheet control
+    // those too — see SETUP-GUIDE.md, Part 8.
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
     applyPhoto(extractPhotoUrl(rows));
+    applyCommishMessage(extractCommishMessage(rows));
 
     renderStandings(rows, head, body);
   } catch (err) {
@@ -117,6 +180,13 @@ function extractPhotoUrl(rows) {
   return row ? (row[1] || "").trim() : "";
 }
 
+// Looks for a row shaped like "Commish Message" anywhere in the sheet
+// and returns its value, or "" if there isn't one.
+function extractCommishMessage(rows) {
+  const row = rows.find(r => /^commish\s+message$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
 function renderStandings(rows, head, body) {
   // The standings table starts at whichever row's first cell says
   // "Coach" — everything before that (e.g. Banner rows) is ignored here.
@@ -136,12 +206,14 @@ function renderStandings(rows, head, body) {
   weekColumns.sort((a, b) => a.week - b.week);
 
   // One data row per coach (column A = coach name). Skip blank rows and
-  // any stray Banner/Photo URL row, in case one ended up below the header.
+  // any stray meta row (Banner/Photo URL/Commish Message), in case one
+  // ended up below the header.
   const coachRows = rows.slice(headerIndex + 1).filter(r => {
     const first = (r[0] || "").trim();
     return first !== ""
       && !/^banner\s+(active|text|link)$/i.test(first)
-      && !/^photo\s+url$/i.test(first);
+      && !/^photo\s+url$/i.test(first)
+      && !/^commish\s+message$/i.test(first);
   });
 
   // Only keep week columns where at least one coach has a result —
