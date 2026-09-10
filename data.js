@@ -5,7 +5,7 @@
 // ============================================================
 
 // The name shown at the top of the page.
-const LEAGUE_NAME = "Viva la Mexico";
+const LEAGUE_NAME = "Viva la Fútbol";
 
 // --------------------------------------------------------------
 // THIS WEEK'S ANNOUNCEMENT BANNER (fallback / default)
