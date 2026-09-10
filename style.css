@@ -337,25 +337,33 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
    regardless of site theme, since that's the whole bit. */
 .commish-section {
   max-width: 1100px;
-  margin: 32px auto 0;
+  margin: 0 auto 32px;
 }
 
 .commish-section h2 {
+  font-family: "Space Mono", "Courier New", Courier, monospace;
+  font-weight: 700;
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted);
-  margin-bottom: 8px;
+  color: #ffffff;
+  background: #0c0f0a;
+  margin: 0;
+  padding: 10px 20px;
+  border-radius: 10px 10px 0 0;
+  border: 1px solid #1c2418;
+  border-bottom: none;
 }
 
 .terminal {
   background: #0c0f0a;
-  color: #4be24b;
-  font-family: "Courier New", Courier, monospace;
+  color: #ffffff;
+  font-family: "Space Mono", "Courier New", Courier, monospace;
+  font-weight: 700;
   font-size: 1.05rem;
   line-height: 1.6;
   padding: 18px 20px;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   border: 1px solid #1c2418;
   white-space: pre-wrap;
   word-break: break-word;
