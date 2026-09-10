@@ -146,6 +146,13 @@ tbody tr:last-child td {
   background: var(--total-bg);
 }
 
+.status-message {
+  text-align: center;
+  color: var(--muted);
+  padding: 28px 14px;
+  white-space: normal;
+}
+
 tr.rank-1 .coach-cell { color: #8a6d00; }
 tr.rank-2 .coach-cell { color: #5b6068; }
 tr.rank-3 .coach-cell { color: #8a4a1c; }

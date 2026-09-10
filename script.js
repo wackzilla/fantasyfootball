@@ -1,5 +1,6 @@
 // This file does the rendering. You shouldn't need to edit it —
-// everything you change week to week lives in data.js.
+// your league name, banner, and points settings live in data.js,
+// and your coaches + weekly results live in your Google Sheet.
 
 document.addEventListener("DOMContentLoaded", () => {
   // League name
@@ -14,54 +15,100 @@ document.addEventListener("DOMContentLoaded", () => {
     banner.hidden = false;
   }
 
-  renderStandings();
+  loadStandings();
 });
 
-function renderStandings() {
-  // Only show columns for weeks that actually have data, in order.
-  const weeks = [...WEEKLY_RESULTS]
-    .map(w => w.week)
-    .sort((a, b) => a - b);
+async function loadStandings() {
+  const head = document.getElementById("standings-head");
+  const body = document.getElementById("standings-body");
 
-  // Points earned by each coach, per week, plus their running total.
-  const rows = COACHES.map(coach => {
-    const weekCells = weeks.map(weekNum => {
-      const weekData = WEEKLY_RESULTS.find(w => w.week === weekNum);
-      const place = weekData && weekData.places ? weekData.places[coach.name] : undefined;
-      return { week: weekNum, place };
+  if (!SHEET_CSV_URL || SHEET_CSV_URL.indexOf("PASTE_YOUR") === 0) {
+    showMessage(body, "Set SHEET_CSV_URL in data.js to connect your Google Sheet — see SETUP-GUIDE.md.");
+    return;
+  }
+
+  showMessage(body, "Loading standings…");
+
+  try {
+    // Cache-bust so we always get the latest published version of the
+    // sheet, not a stale copy the browser (or a phone) has cached.
+    const url = SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") === -1 ? "?" : "&") + "_=" + Date.now();
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const csvText = await response.text();
+    const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
+
+    if (rows.length < 2) throw new Error("Sheet looks empty");
+
+    renderStandings(rows, head, body);
+  } catch (err) {
+    console.error("Couldn't load standings from Google Sheet:", err);
+    showMessage(body, "Couldn't load standings right now. Check back in a bit, or double-check the sheet is published and SHEET_CSV_URL in data.js is correct.");
+  }
+}
+
+function renderStandings(rows, head, body) {
+  const header = rows[0];
+
+  // Find every column whose header looks like "Week N" (case-insensitive).
+  const weekColumns = [];
+  header.forEach((label, colIndex) => {
+    const match = /week\s*(\d+)/i.exec(label || "");
+    if (match) weekColumns.push({ colIndex, week: parseInt(match[1], 10) });
+  });
+  weekColumns.sort((a, b) => a.week - b.week);
+
+  // One data row per coach (column A = coach name). Skip blank rows.
+  const coachRows = rows.slice(1).filter(r => (r[0] || "").trim() !== "");
+
+  // Only keep week columns where at least one coach has a result —
+  // this is what hides Week 5, Week 6, etc. before they happen.
+  const visibleWeekColumns = weekColumns.filter(wc =>
+    coachRows.some(r => (r[wc.colIndex] || "").trim() !== "")
+  );
+
+  const rowsData = coachRows.map(r => {
+    const name = r[0].trim();
+    const weekCells = visibleWeekColumns.map(wc => {
+      const raw = (r[wc.colIndex] || "").trim();
+      const place = raw ? parseInt(raw, 10) : undefined;
+      return { week: wc.week, place: Number.isFinite(place) ? place : undefined };
     });
-
     const total = weekCells.reduce((sum, cell) => {
       if (!cell.place) return sum;
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
-
-    return { coach, weekCells, total };
+    return { name, weekCells, total };
   });
 
   // Highest total first; alphabetical by name as a tiebreaker.
-  rows.sort((a, b) => {
+  rowsData.sort((a, b) => {
     if (b.total !== a.total) return b.total - a.total;
-    return a.coach.name.localeCompare(b.coach.name);
+    return a.name.localeCompare(b.name);
   });
 
   // --- Header ---
-  const head = document.getElementById("standings-head");
+  head.innerHTML = "";
   const headRow = document.createElement("tr");
   headRow.innerHTML =
     "<th>Coach</th>" +
-    weeks.map(w => `<th>Week ${w}</th>`).join("") +
+    visibleWeekColumns.map(wc => `<th>Week ${wc.week}</th>`).join("") +
     "<th>Total</th>";
   head.appendChild(headRow);
 
   // --- Body ---
-  const body = document.getElementById("standings-body");
-  rows.forEach((row, i) => {
+  body.innerHTML = "";
+  if (rowsData.length === 0) {
+    showMessage(body, "No coaches found — check that your sheet has one row per coach under the header row.");
+    return;
+  }
+
+  rowsData.forEach((row, i) => {
     const tr = document.createElement("tr");
     const rank = i + 1;
     if (rank <= 3) tr.classList.add("rank-" + rank);
 
-    const nameCell = `<td class="coach-cell">${escapeHtml(row.coach.name)} <span class="handle">(${escapeHtml(row.coach.handle)})</span></td>`;
+    const nameCell = `<td class="coach-cell">${escapeHtml(row.name)}</td>`;
     const weekTds = row.weekCells
       .map(cell => `<td class="week-cell">${cell.place ? placeCellHtml(cell.place) : "&ndash;"}</td>`)
       .join("");
@@ -70,6 +117,10 @@ function renderStandings() {
     tr.innerHTML = nameCell + weekTds + totalTd;
     body.appendChild(tr);
   });
+}
+
+function showMessage(body, text) {
+  body.innerHTML = `<tr><td class="status-message" colspan="99">${escapeHtml(text)}</td></tr>`;
 }
 
 // A week's place cell: top 3 finishers get a colored ribbon badge with a
@@ -97,6 +148,37 @@ function ordinal(n) {
   const suffixes = ["th", "st", "nd", "rd"];
   const v = n % 100;
   return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
+}
+
+// A small CSV parser that handles quoted fields (so coach names or
+// handles containing a comma still work).
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = "", inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else { inQuotes = false; }
+      } else {
+        field += c;
+      }
+    } else if (c === '"') {
+      inQuotes = true;
+    } else if (c === ',') {
+      row.push(field); field = "";
+    } else if (c === '\n' || c === '\r') {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(field); field = "";
+      rows.push(row); row = [];
+    } else {
+      field += c;
+    }
+  }
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+  return rows;
 }
 
 function escapeHtml(str) {

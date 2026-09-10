@@ -1,11 +1,11 @@
 // ============================================================
-//  EDIT THIS FILE EACH WEEK — it's the only file you need to touch.
-//  Scroll down to "WEEKLY_RESULTS" — that's the only part that
-//  changes week to week. Everything above it is set-once.
+//  SETTINGS — set these once, they rarely change.
+//  Your coaches and weekly results now live in your Google Sheet,
+//  not in this file. See SETUP-GUIDE.md for how to connect it.
 // ============================================================
 
 // The name shown at the top of the page.
-const LEAGUE_NAME = "Viva la Mexico";
+const LEAGUE_NAME = "Your League Name Here";
 
 // --------------------------------------------------------------
 // THIS WEEK'S ANNOUNCEMENT BANNER
@@ -16,27 +16,9 @@ const LEAGUE_NAME = "Viva la Mexico";
 // --------------------------------------------------------------
 const ANNOUNCEMENT = {
   active: true,
-  text: "This weeks contest is live! — Click here to enter on DraftKings!",
-  link: "https://i.imgur.com/8kYUOdx.jpeg"
+  text: "Week 1 contest is live — click here to enter on DraftKings!",
+  link: "https://www.draftkings.com/"
 };
-
-// --------------------------------------------------------------
-// COACHES
-// Set this once at the start of the season. "name" is what shows
-// on the page, "handle" is their DraftKings username shown next
-// to it. Use these exact "name" values down in WEEKLY_RESULTS.
-// --------------------------------------------------------------
-const COACHES = [
-  { name: "allydee18" },
-  { name: "tateboyce" },
-  { name: "wackzillaog" },
-  { name: "DaBears4141" },
-  { name: "saadameiser" },
-  { name: "Pureluck88" },
-  { name: "heacar6" },
-  { name: "jenifred" },
-  { name: "T-Bonez" },
-];
 
 // --------------------------------------------------------------
 // POINTS
@@ -50,31 +32,21 @@ const POINTS_BY_PLACE = {
 };
 
 // --------------------------------------------------------------
-// WEEKLY RESULTS  <-- THE ONLY PART YOU EDIT EACH WEEK
+// GOOGLE SHEET
+// Paste the "publish to web" CSV link for your sheet here.
+// See SETUP-GUIDE.md, section "Connecting the Google Sheet", for
+// exactly how to get this link (Google Sheets -> File -> Share ->
+// Publish to web -> choose CSV -> Publish -> copy the link).
 //
-// One block per week. Each week lists what place (1 = first,
-// 2 = second, etc.) every coach finished in that week's contest.
+// Your sheet should look like this, one row per coach:
 //
-// TO ADD A NEW WEEK: copy an entire { ... } block below (including
-// the commas), paste it after the last one, change "week" to the
-// new week number, and update everyone's place.
+//   Coach                 | Week 1 | Week 2 | Week 3 | ...
+//   Ally (allydee18)      |   2    |        |        |
+//   Tate (tateboyce)      |   4    |        |        |
+//   ...
 //
-// Weeks you haven't added yet simply won't show on the page — no
-// need to hide or blank anything out.
+// Leave a cell blank for a coach who hasn't played that week yet
+// — the page automatically only shows weeks with at least one
+// result filled in, and skips blank cells for anyone else.
 // --------------------------------------------------------------
-const WEEKLY_RESULTS = [
-  {
-    week: 1,
-    places: {
-      "Ally": 2,
-      "Tate": 4,
-      "Zach": 7,
-      "Stef": 1,
-      "Bob": 3,
-      "Val": 8,
-      "Heath": 6,
-      "Jen": 9,
-      "Landon": 5,
-    }
-  },
-];
+const SHEET_CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_LINK_HERE";
