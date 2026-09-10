@@ -49,4 +49,4 @@ const POINTS_BY_PLACE = {
 // — the page automatically only shows weeks with at least one
 // result filled in, and skips blank cells for anyone else.
 // --------------------------------------------------------------
-const SHEET_CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_LINK_HERE";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/edit?usp=sharing";
