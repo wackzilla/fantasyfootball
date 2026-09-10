@@ -7,16 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("league-name").textContent = LEAGUE_NAME;
   document.title = LEAGUE_NAME + " — Standings";
 
-  // Announcement banner
-  if (typeof ANNOUNCEMENT !== "undefined" && ANNOUNCEMENT.active) {
-    const banner = document.getElementById("banner");
-    document.getElementById("banner-text").textContent = ANNOUNCEMENT.text;
-    document.getElementById("banner-link").href = ANNOUNCEMENT.link;
-    banner.hidden = false;
-  }
+  // Show the banner from data.js immediately (no flash of "no banner").
+  // If the sheet defines its own Banner rows, loadStandings() below will
+  // swap it out once the sheet finishes loading.
+  applyBanner(ANNOUNCEMENT || {});
 
   loadStandings();
 });
+
+function applyBanner(ann) {
+  const banner = document.getElementById("banner");
+  if (ann && ann.active && ann.text && ann.link) {
+    document.getElementById("banner-text").textContent = ann.text;
+    document.getElementById("banner-link").href = ann.link;
+    banner.hidden = false;
+  } else {
+    banner.hidden = true;
+  }
+}
 
 async function loadStandings() {
   const head = document.getElementById("standings-head");
@@ -30,25 +38,71 @@ async function loadStandings() {
   showMessage(body, "Loading standings…");
 
   try {
-    // Cache-bust so we always get the latest published version of the
-    // sheet, not a stale copy the browser (or a phone) has cached.
+    // Cache-bust so we always get the latest version of the sheet, not a
+    // stale copy the browser (or a phone) has cached.
     const url = SHEET_CSV_URL + (SHEET_CSV_URL.indexOf("?") === -1 ? "?" : "&") + "_=" + Date.now();
     const response = await fetch(url, { cache: "no-store" });
     if (!response.ok) throw new Error("HTTP " + response.status);
     const csvText = await response.text();
-    const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
 
+    // If SHEET_CSV_URL points at the wrong kind of link, Google sends
+    // back an HTML page (a sign-in page, or the interactive spreadsheet
+    // viewer) instead of plain CSV data. Catch that early with a clear
+    // message instead of trying to render it as if it were real rows.
+    const looksLikeHtml = /^\s*<(!doctype|html)/i.test(csvText) || csvText.indexOf("<script") !== -1;
+    if (looksLikeHtml) {
+      throw new Error(
+        "That link returned a web page instead of CSV data. In data.js, " +
+        "SHEET_CSV_URL needs to be the CSV export/publish link, not a " +
+        "regular Sheets link — see SETUP-GUIDE.md, Part 8."
+      );
+    }
+
+    const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
     if (rows.length < 2) throw new Error("Sheet looks empty");
+
+    // Optional Banner rows anywhere above the "Coach" header row let the
+    // sheet control the banner too — see SETUP-GUIDE.md, Part 8.
+    const bannerFromSheet = extractBannerRows(rows);
+    if (bannerFromSheet) applyBanner(bannerFromSheet);
 
     renderStandings(rows, head, body);
   } catch (err) {
     console.error("Couldn't load standings from Google Sheet:", err);
-    showMessage(body, "Couldn't load standings right now. Check back in a bit, or double-check the sheet is published and SHEET_CSV_URL in data.js is correct.");
+    const message = err && err.message && err.message.indexOf("web page instead of CSV") !== -1
+      ? err.message
+      : "Couldn't load standings right now. Check back in a bit, or double-check the sheet is published and SHEET_CSV_URL in data.js is correct.";
+    showMessage(body, message);
   }
 }
 
+// Looks for rows shaped like "Banner Active" / "Banner Text" / "Banner
+// Link" anywhere in the sheet and turns them into a banner object.
+// Returns null if none of those rows are present (so the caller keeps
+// whatever banner data.js already set).
+function extractBannerRows(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const match = /^banner\s+(active|text|link)$/i.exec((r[0] || "").trim());
+    if (match) map[match[1].toLowerCase()] = (r[1] || "").trim();
+  });
+  if (!map.active && !map.text && !map.link) return null;
+  return {
+    active: /^(true|yes|1|on)$/i.test(map.active || ""),
+    text: map.text || "",
+    link: map.link || "",
+  };
+}
+
 function renderStandings(rows, head, body) {
-  const header = rows[0];
+  // The standings table starts at whichever row's first cell says
+  // "Coach" — everything before that (e.g. Banner rows) is ignored here.
+  const headerIndex = rows.findIndex(r => (r[0] || "").trim().toLowerCase() === "coach");
+  if (headerIndex === -1) {
+    showMessage(body, 'Couldn\'t find your standings table — make sure one row in the sheet starts with "Coach" in the first column.');
+    return;
+  }
+  const header = rows[headerIndex];
 
   // Find every column whose header looks like "Week N" (case-insensitive).
   const weekColumns = [];
@@ -58,8 +112,12 @@ function renderStandings(rows, head, body) {
   });
   weekColumns.sort((a, b) => a.week - b.week);
 
-  // One data row per coach (column A = coach name). Skip blank rows.
-  const coachRows = rows.slice(1).filter(r => (r[0] || "").trim() !== "");
+  // One data row per coach (column A = coach name). Skip blank rows and
+  // any stray Banner row, in case one ended up below the header.
+  const coachRows = rows.slice(headerIndex + 1).filter(r => {
+    const first = (r[0] || "").trim();
+    return first !== "" && !/^banner\s+(active|text|link)$/i.test(first);
+  });
 
   // Only keep week columns where at least one coach has a result —
   // this is what hides Week 5, Week 6, etc. before they happen.

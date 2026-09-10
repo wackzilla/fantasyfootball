@@ -8,11 +8,17 @@
 const LEAGUE_NAME = "Your League Name Here";
 
 // --------------------------------------------------------------
-// THIS WEEK'S ANNOUNCEMENT BANNER
+// THIS WEEK'S ANNOUNCEMENT BANNER (fallback / default)
 // Shows a highlighted bar at the top of the page with a link to
 // this week's DraftKings contest.
 //   active: true  -> banner is shown
 //   active: false -> banner is hidden (e.g. between weeks)
+//
+// You can instead control this from your Google Sheet each week —
+// see SETUP-GUIDE.md, Part 8, "Adding the banner to the sheet."
+// If your sheet has Banner rows, they override what's set here;
+// this is just what shows before the sheet loads, or if you never
+// add Banner rows to the sheet at all.
 // --------------------------------------------------------------
 const ANNOUNCEMENT = {
   active: true,
@@ -33,12 +39,14 @@ const POINTS_BY_PLACE = {
 
 // --------------------------------------------------------------
 // GOOGLE SHEET
-// Paste the "publish to web" CSV link for your sheet here.
-// See SETUP-GUIDE.md, section "Connecting the Google Sheet", for
-// exactly how to get this link (Google Sheets -> File -> Share ->
-// Publish to web -> choose CSV -> Publish -> copy the link).
+// Paste your sheet's CSV export link here. See SETUP-GUIDE.md,
+// Part 8, for exactly how to get this link — it must be the CSV
+// link (contains "format=csv" or "output=csv"), not a regular
+// docs.google.com/.../edit link, or the page won't be able to
+// read it.
 //
-// Your sheet should look like this, one row per coach:
+// Your sheet should have one row per coach, with a "Coach" header
+// row above them:
 //
 //   Coach                 | Week 1 | Week 2 | Week 3 | ...
 //   Ally (allydee18)      |   2    |        |        |
@@ -48,5 +56,13 @@ const POINTS_BY_PLACE = {
 // Leave a cell blank for a coach who hasn't played that week yet
 // — the page automatically only shows weeks with at least one
 // result filled in, and skips blank cells for anyone else.
+//
+// Optionally, add rows ABOVE the "Coach" row to control the
+// banner from the sheet instead of the ANNOUNCEMENT block above:
+//
+//   Banner Active | TRUE
+//   Banner Text   | Week 3 contest is live!
+//   Banner Link   | https://www.draftkings.com/...
+//
 // --------------------------------------------------------------
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/edit?usp=sharing";
+const SHEET_CSV_URL = "PASTE_YOUR_PUBLISHED_CSV_LINK_HERE";
