@@ -65,4 +65,4 @@ const POINTS_BY_PLACE = {
 //   Banner Link   | https://www.draftkings.com/...
 //
 // --------------------------------------------------------------
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/edit?gid=0#gid=0";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/edit?usp=sharing";
