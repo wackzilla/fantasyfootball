@@ -6,9 +6,7 @@
   --accent: #1d6f42;
   --accent-dark: #144f2f;
   --border: #e3e5e9;
-  --gold: #f4c542;
-  --silver: #cfd4da;
-  --bronze: #d99a5b;
+  --total-bg: #eef6f0;
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +20,7 @@ body {
 }
 
 .site-header {
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 40px 0 8px;
   text-align: center;
@@ -41,7 +39,7 @@ body {
 }
 
 .banner {
-  max-width: 720px;
+  max-width: 960px;
   margin: 20px auto 0;
 }
 
@@ -69,7 +67,7 @@ body {
 }
 
 main {
-  max-width: 720px;
+  max-width: 960px;
   margin: 32px auto 0;
 }
 
@@ -78,48 +76,76 @@ main {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--muted);
-  margin-bottom: 12px;
+  margin-bottom: 4px;
+}
+
+.legend {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
   background: var(--card);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 thead th {
   text-align: left;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--muted);
-  padding: 12px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 tbody td {
-  padding: 12px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 tbody tr:last-child td {
   border-bottom: none;
 }
 
-td.rank {
-  font-weight: 700;
-  width: 48px;
+.coach-cell {
+  font-weight: 600;
 }
 
-tr.rank-1 td.rank { color: #b8860b; }
-tr.rank-2 td.rank { color: #7a7f87; }
-tr.rank-3 td.rank { color: #a5622c; }
+.coach-cell .handle {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.week-cell {
+  text-align: center;
+  color: var(--text);
+}
+
+.total-cell {
+  text-align: center;
+  font-weight: 700;
+  background: var(--total-bg);
+}
+
+tr.rank-1 .coach-cell { color: #8a6d00; }
+tr.rank-2 .coach-cell { color: #5b6068; }
+tr.rank-3 .coach-cell { color: #8a4a1c; }
 
 .site-footer {
-  max-width: 720px;
+  max-width: 960px;
   margin: 32px auto 0;
   text-align: center;
   color: var(--muted);
@@ -133,5 +159,6 @@ tr.rank-3 td.rank { color: #a5622c; }
     --text: #f2f3f5;
     --muted: #9aa0aa;
     --border: #2b2f38;
+    --total-bg: #1a2620;
   }
 }

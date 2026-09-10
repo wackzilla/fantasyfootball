@@ -23,19 +23,13 @@
   <main>
     <section class="standings-section">
       <h2>Season Standings</h2>
-      <table id="standings-table">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Name</th>
-            <th>Wins</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <tbody id="standings-body">
-          <!-- rows inserted by script.js -->
-        </tbody>
-      </table>
+      <p class="legend">Each cell shows the place a coach finished that week. 1st = 5 pts &middot; 2nd = 3 pts &middot; 3rd = 1 pt</p>
+      <div class="table-scroll">
+        <table id="standings-table">
+          <thead id="standings-head"></thead>
+          <tbody id="standings-body"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
@@ -43,7 +37,12 @@
     <p>Updated weekly &middot; last edited by the commissioner</p>
   </footer>
 
-  <script src="data.js"></script>
+  <script>
+    // Cache-busting: appends a changing number to data.js's URL so
+    // browsers (especially on phones) always fetch the latest version
+    // instead of showing an old cached copy after you edit it.
+    document.write('<script src="data.js?v=' + Date.now() + '"><' + '/script>');
+  </script>
   <script src="script.js"></script>
 </body>
 </html>
