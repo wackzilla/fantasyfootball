@@ -16,8 +16,8 @@ const LEAGUE_NAME = "Viva la Mexico";
 // --------------------------------------------------------------
 const ANNOUNCEMENT = {
   active: true,
-  text: "Week 1 contest is live — click here to enter on DraftKings!",
-  link: "https://www.draftkings.com/"
+  text: "This weeks contest is live! — Click here to enter on DraftKings!",
+  link: "https://i.imgur.com/8kYUOdx_d.webp?maxwidth=760&fidelity=grand"
 };
 
 // --------------------------------------------------------------
