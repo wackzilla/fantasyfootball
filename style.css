@@ -7,6 +7,12 @@
   --accent-dark: #144f2f;
   --border: #e3e5e9;
   --total-bg: #eef6f0;
+  --gold-bg: #f4c542;
+  --gold-text: #3b2c00;
+  --silver-bg: #cdd3db;
+  --silver-text: #2e3238;
+  --bronze-bg: #dda06a;
+  --bronze-text: #3a2410;
 }
 
 * { box-sizing: border-box; }
@@ -143,6 +149,37 @@ tbody tr:last-child td {
 tr.rank-1 .coach-cell { color: #8a6d00; }
 tr.rank-2 .coach-cell { color: #5b6068; }
 tr.rank-3 .coach-cell { color: #8a4a1c; }
+
+/* Weekly place ribbons (1st/2nd/3rd for that week only) */
+.place-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+.place-badge.place-1 { background: var(--gold-bg); color: var(--gold-text); }
+.place-badge.place-2 { background: var(--silver-bg); color: var(--silver-text); }
+.place-badge.place-3 { background: var(--bronze-bg); color: var(--bronze-text); }
+
+/* Season-total trophies (top 3 overall, always follows sort order) */
+.trophy-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 1em;
+}
+
+.trophy-badge.trophy-1 { background: var(--gold-bg); color: var(--gold-text); }
+.trophy-badge.trophy-2 { background: var(--silver-bg); color: var(--silver-text); }
+.trophy-badge.trophy-3 { background: var(--bronze-bg); color: var(--bronze-text); }
 
 .site-footer {
   max-width: 960px;

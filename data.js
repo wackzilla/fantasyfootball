@@ -5,7 +5,7 @@
 // ============================================================
 
 // The name shown at the top of the page.
-const LEAGUE_NAME = "Viva la Mexico";
+const LEAGUE_NAME = "Your League Name Here";
 
 // --------------------------------------------------------------
 // THIS WEEK'S ANNOUNCEMENT BANNER
@@ -16,8 +16,8 @@ const LEAGUE_NAME = "Viva la Mexico";
 // --------------------------------------------------------------
 const ANNOUNCEMENT = {
   active: true,
-  text: "This weeks contest is live! — Click here to enter on DraftKings!",
-  link: "https://i.imgur.com/8kYUOdx.jpeg"
+  text: "Week 1 contest is live — click here to enter on DraftKings!",
+  link: "https://www.draftkings.com/"
 };
 
 // --------------------------------------------------------------

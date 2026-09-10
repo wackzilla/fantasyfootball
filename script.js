@@ -63,13 +63,40 @@ function renderStandings() {
 
     const nameCell = `<td class="coach-cell">${escapeHtml(row.coach.name)} <span class="handle">(${escapeHtml(row.coach.handle)})</span></td>`;
     const weekTds = row.weekCells
-      .map(cell => `<td class="week-cell">${cell.place ? cell.place : "&ndash;"}</td>`)
+      .map(cell => `<td class="week-cell">${cell.place ? placeCellHtml(cell.place) : "&ndash;"}</td>`)
       .join("");
-    const totalTd = `<td class="total-cell">${row.total}</td>`;
+    const totalTd = `<td class="total-cell">${totalCellHtml(row.total, rank)}</td>`;
 
     tr.innerHTML = nameCell + weekTds + totalTd;
     body.appendChild(tr);
   });
+}
+
+// A week's place cell: top 3 finishers get a colored ribbon badge with a
+// medal; everyone else just gets the plain ordinal (1st, 2nd, 3rd, 4th...).
+function placeCellHtml(place) {
+  const label = ordinal(place);
+  if (place >= 1 && place <= 3) {
+    const medal = { 1: "\u{1F947}", 2: "\u{1F948}", 3: "\u{1F949}" }[place];
+    return `<span class="place-badge place-${place}">${medal} ${label}</span>`;
+  }
+  return label;
+}
+
+// The Total cell for the top 3 coaches overall gets a trophy badge;
+// everyone else just gets the plain number.
+function totalCellHtml(total, rank) {
+  if (rank >= 1 && rank <= 3) {
+    return `<span class="trophy-badge trophy-${rank}">\u{1F3C6} ${total}</span>`;
+  }
+  return total;
+}
+
+// 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 4 -> "4th", 11 -> "11th", ...
+function ordinal(n) {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
 }
 
 function escapeHtml(str) {
