@@ -40,18 +40,17 @@ function applyCommishMessage(message) {
 }
 
 // Shows the photo panel if a League Leader photo was set in the sheet;
-// hides it (and gracefully falls back) if not set, or if the image fails
-// to load.
-function applyPhoto(url) {
+// hides it (and gracefully falls back) if not set, or if none of the
+// candidate image URLs (see resolvePhotoCandidates) load successfully.
+function applyPhoto(candidates) {
   const panel = document.getElementById("photo-panel");
   const img = document.getElementById("team-photo");
-  if (!url) {
+  if (!candidates || !candidates.length) {
     panel.hidden = true;
     return;
   }
-  img.onerror = () => { panel.hidden = true; };
   img.onload = () => { panel.hidden = false; };
-  img.src = url;
+  loadImageWithFallback(img, candidates, () => { panel.hidden = true; });
 }
 
 async function loadStandings() {
@@ -126,26 +125,46 @@ function extractBannerRows(rows) {
 }
 
 // Looks for a row shaped like "League Leader" anywhere in the sheet and
-// returns its value, or "" if there isn't one. ("Photo URL" is accepted
-// too, since that was this row's name before — no need to rename it in
-// an existing sheet unless you want to.)
+// returns a list of image URLs to try, or [] if there isn't one.
+// ("Photo URL" is accepted too, since that was this row's name before —
+// no need to rename it in an existing sheet unless you want to.)
 function extractLeagueLeaderPhoto(rows) {
   const row = rows.find(r => /^(league\s+leader|photo\s+url)$/i.test((r[0] || "").trim()));
   const base = typeof PHOTO_REPO_BASE !== "undefined" ? PHOTO_REPO_BASE : "";
-  return row ? resolvePhotoUrl((row[1] || "").trim(), base) : "";
+  return row ? resolvePhotoCandidates((row[1] || "").trim(), base) : [];
 }
 
-// Turns a sheet's photo cell into an actual image URL. If it's already
-// a full link (starts with http), it's used as-is. Otherwise it's
-// treated as a username and turned into a standard photo link using
-// the given base — PHOTO_REPO_BASE for League Leader, or
-// PODIUM_PHOTO_REPO_BASE for the per-coach Photo column (see data.js).
-function resolvePhotoUrl(value, base) {
+// Turns a sheet's photo cell into a list of image URLs to try, in
+// order. If it's already a full link (starts with http), that's the
+// only candidate — used as-is. Otherwise it's treated as a username
+// and turned into a standard photo link using the given base —
+// PHOTO_REPO_BASE for League Leader, or PODIUM_PHOTO_REPO_BASE for the
+// per-coach Photo column (see data.js) — tried as .jpg, .jpeg, then
+// .png, since it's easy to upload a photo as the "wrong" file type
+// without noticing.
+function resolvePhotoCandidates(value, base) {
   const v = (value || "").trim();
-  if (!v) return "";
-  if (/^https?:\/\//i.test(v)) return v;
+  if (!v) return [];
+  if (/^https?:\/\//i.test(v)) return [v];
   const slug = v.toLowerCase().replace(/[^a-z0-9_-]/g, "");
-  return base ? base + slug + ".jpg" : "";
+  if (!base || !slug) return [];
+  return ["jpg", "jpeg", "png"].map(ext => base + slug + "." + ext);
+}
+
+// Points an <img> at the first of several candidate URLs, moving on to
+// the next one if a URL 404s (or otherwise fails to load), and calling
+// onAllFailed() if none of them work.
+function loadImageWithFallback(img, candidates, onAllFailed) {
+  let i = -1;
+  img.onerror = () => {
+    i++;
+    if (i < candidates.length) {
+      img.src = candidates[i];
+    } else {
+      onAllFailed();
+    }
+  };
+  img.onerror();
 }
 
 // Looks for a row shaped like "Commish Message" anywhere in the sheet
@@ -207,8 +226,8 @@ function renderStandings(rows, head, body) {
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
     const podiumBase = typeof PODIUM_PHOTO_REPO_BASE !== "undefined" ? PODIUM_PHOTO_REPO_BASE : "";
-    const photoUrl = photoColIndex !== -1 ? resolvePhotoUrl(r[photoColIndex], podiumBase) : "";
-    return { name, weekCells, total, photoUrl };
+    const photoCandidates = photoColIndex !== -1 ? resolvePhotoCandidates(r[photoColIndex], podiumBase) : [];
+    return { name, weekCells, total, photoCandidates };
   });
 
   // Highest total first; alphabetical by name as a tiebreaker.
@@ -247,13 +266,30 @@ function renderStandings(rows, head, body) {
     const rank = i + 1;
     if (rank <= 3) tr.classList.add("rank-" + rank);
 
-    const nameCell = `<td class="coach-cell">${escapeHtml(row.name)}</td>`;
+    const nameTd = document.createElement("td");
+    nameTd.className = "coach-cell";
+    if (row.photoCandidates && row.photoCandidates.length) {
+      const img = document.createElement("img");
+      img.className = "coach-avatar";
+      img.alt = "";
+      loadImageWithFallback(img, row.photoCandidates, () => {
+        img.replaceWith(makeSilhouette("coach-avatar coach-avatar-silhouette"));
+      });
+      nameTd.appendChild(img);
+    } else {
+      nameTd.appendChild(makeSilhouette("coach-avatar coach-avatar-silhouette"));
+    }
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = row.name;
+    nameTd.appendChild(nameSpan);
+
     const weekTds = row.weekCells
       .map(cell => `<td class="week-cell">${cell.place ? placeCellHtml(cell.place) : "&ndash;"}</td>`)
       .join("");
     const totalTd = `<td class="total-cell">${totalCellHtml(row.total, rank)}</td>`;
 
-    tr.innerHTML = nameCell + weekTds + totalTd;
+    tr.appendChild(nameTd);
+    tr.insertAdjacentHTML("beforeend", weekTds + totalTd);
     body.appendChild(tr);
   });
 }
@@ -307,15 +343,16 @@ function buildPodiumSlot(place, row) {
 
   const photoWrap = document.createElement("div");
   photoWrap.className = "podium-photo-wrap";
-  if (row.photoUrl) {
+  if (row.photoCandidates && row.photoCandidates.length) {
     const img = document.createElement("img");
     img.className = "podium-photo";
     img.alt = row.name;
-    img.onerror = () => { img.replaceWith(makeSilhouette()); };
-    img.src = row.photoUrl;
+    loadImageWithFallback(img, row.photoCandidates, () => {
+      img.replaceWith(makeSilhouette("podium-photo podium-silhouette"));
+    });
     photoWrap.appendChild(img);
   } else {
-    photoWrap.appendChild(makeSilhouette());
+    photoWrap.appendChild(makeSilhouette("podium-photo podium-silhouette"));
   }
 
   const name = document.createElement("div");
@@ -336,11 +373,12 @@ function buildPodiumSlot(place, row) {
   return slot;
 }
 
-// A plain default avatar for a podium coach with no photo set (or whose
-// photo failed to load) — a generic head-and-shoulders silhouette.
-function makeSilhouette() {
+// A plain default avatar for a coach with no photo set (or whose photo
+// failed to load) — a generic head-and-shoulders silhouette. className
+// controls its size/placement (see the podium and coach-cell call sites).
+function makeSilhouette(className) {
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.setAttribute("class", "podium-photo podium-silhouette");
+  svg.setAttribute("class", className);
   svg.setAttribute("viewBox", "0 0 64 64");
   svg.setAttribute("aria-hidden", "true");
   svg.innerHTML =

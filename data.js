@@ -60,8 +60,10 @@ const POINTS_BY_PLACE = {
 // That means every photo file uploaded to the repo needs to be named
 // to match — "currentleader_" + username for League Leader photos,
 // "profpic_" + username for podium photos, both all lowercase, e.g.
-// currentleader_dabears4141.jpg and profpic_dabears4141.jpg. If you'd
-// rather paste a full link instead (a different file type, a photo
+// currentleader_dabears4141.jpg and profpic_dabears4141.png. The file
+// extension doesn't matter — .jpg, .jpeg, and .png are all tried
+// automatically, so it's fine if a photo happens to save as one type
+// or another. If you'd rather paste a full link instead (a photo
 // hosted somewhere else, etc.), that still works too, for either one —
 // anything starting with "http" is used as-is instead of being turned
 // into a username-based link.

@@ -354,13 +354,29 @@ tbody tr:last-child td {
 }
 
 .coach-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-weight: 600;
 }
 
-.coach-cell .handle {
-  font-weight: 400;
-  color: var(--muted);
-  font-size: 0.85em;
+.coach-avatar {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.coach-avatar-silhouette .sil-bg {
+  fill: var(--border);
+}
+
+.coach-avatar-silhouette .sil-fg {
+  fill: var(--card);
 }
 
 .week-cell {
