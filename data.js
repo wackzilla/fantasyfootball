@@ -27,15 +27,15 @@ const ANNOUNCEMENT = {
 // to it. Use these exact "name" values down in WEEKLY_RESULTS.
 // --------------------------------------------------------------
 const COACHES = [
-  { name: "Ally",   handle: "allydee18" },
-  { name: "Tate",   handle: "tateboyce" },
-  { name: "Zach",   handle: "wackzillaog" },
-  { name: "Stef",   handle: "DaBears4141" },
-  { name: "Bob",    handle: "saadameiser" },
-  { name: "Val",    handle: "Pureluck88" },
-  { name: "Heath",  handle: "heacar6" },
-  { name: "Jen",    handle: "jenifred" },
-  { name: "Landon", handle: "T-Bonez" },
+  { name: "allydee18" },
+  { name: "tateboyce" },
+  { name: "wackzillaog" },
+  { name: "DaBears4141" },
+  { name: "saadameiser" },
+  { name: "Pureluck88" },
+  { name: "heacar6" },
+  { name: "jenifred" },
+  { name: "T-Bonez" },
 ];
 
 // --------------------------------------------------------------
