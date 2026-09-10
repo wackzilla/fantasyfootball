@@ -26,6 +26,20 @@ function applyBanner(ann) {
   }
 }
 
+// Shows the photo panel if a Photo URL was set in the sheet; hides it
+// (and gracefully falls back) if not set, or if the image fails to load.
+function applyPhoto(url) {
+  const panel = document.getElementById("photo-panel");
+  const img = document.getElementById("team-photo");
+  if (!url) {
+    panel.hidden = true;
+    return;
+  }
+  img.onerror = () => { panel.hidden = true; };
+  img.onload = () => { panel.hidden = false; };
+  img.src = url;
+}
+
 async function loadStandings() {
   const head = document.getElementById("standings-head");
   const body = document.getElementById("standings-body");
@@ -61,10 +75,12 @@ async function loadStandings() {
     const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
     if (rows.length < 2) throw new Error("Sheet looks empty");
 
-    // Optional Banner rows anywhere above the "Coach" header row let the
-    // sheet control the banner too — see SETUP-GUIDE.md, Part 8.
+    // Optional Banner rows and a Photo URL row anywhere above the
+    // "Coach" header row let the sheet control those too — see
+    // SETUP-GUIDE.md, Part 8.
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
+    applyPhoto(extractPhotoUrl(rows));
 
     renderStandings(rows, head, body);
   } catch (err) {
@@ -94,6 +110,13 @@ function extractBannerRows(rows) {
   };
 }
 
+// Looks for a row shaped like "Photo URL" anywhere in the sheet and
+// returns its value, or "" if there isn't one.
+function extractPhotoUrl(rows) {
+  const row = rows.find(r => /^photo\s+url$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
 function renderStandings(rows, head, body) {
   // The standings table starts at whichever row's first cell says
   // "Coach" — everything before that (e.g. Banner rows) is ignored here.
@@ -113,10 +136,12 @@ function renderStandings(rows, head, body) {
   weekColumns.sort((a, b) => a.week - b.week);
 
   // One data row per coach (column A = coach name). Skip blank rows and
-  // any stray Banner row, in case one ended up below the header.
+  // any stray Banner/Photo URL row, in case one ended up below the header.
   const coachRows = rows.slice(headerIndex + 1).filter(r => {
     const first = (r[0] || "").trim();
-    return first !== "" && !/^banner\s+(active|text|link)$/i.test(first);
+    return first !== ""
+      && !/^banner\s+(active|text|link)$/i.test(first)
+      && !/^photo\s+url$/i.test(first);
   });
 
   // Only keep week columns where at least one coach has a result —
@@ -144,6 +169,13 @@ function renderStandings(rows, head, body) {
     if (b.total !== a.total) return b.total - a.total;
     return a.name.localeCompare(b.name);
   });
+
+  // Whoever ends up on top after sorting is shown as the "Current
+  // Leader" above the photo, if a photo is showing.
+  const leaderNameEl = document.getElementById("leader-name");
+  if (leaderNameEl) {
+    leaderNameEl.textContent = rowsData.length ? rowsData[0].name : "";
+  }
 
   // --- Header ---
   head.innerHTML = "";

@@ -58,11 +58,16 @@ const POINTS_BY_PLACE = {
 // result filled in, and skips blank cells for anyone else.
 //
 // Optionally, add rows ABOVE the "Coach" row to control the
-// banner from the sheet instead of the ANNOUNCEMENT block above:
+// banner from the sheet instead of the ANNOUNCEMENT block above,
+// and/or to show a photo to the left of the standings table:
 //
 //   Banner Active | TRUE
 //   Banner Text   | Week 3 contest is live!
 //   Banner Link   | https://www.draftkings.com/...
+//   Photo URL     | https://raw.githubusercontent.com/you/repo/main/photo.jpg
 //
+// For Photo URL, upload an image file to your GitHub repo (same as
+// any other file — Add file -> Upload files), then use its raw
+// link. Leave the row out (or the cell blank) to show no photo.
 // --------------------------------------------------------------
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/export?format=csv&gid=1064215180";
