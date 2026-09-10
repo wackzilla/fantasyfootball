@@ -40,16 +40,23 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text);
-  text-shadow: 0 0 20px rgba(244, 197, 66, 0.45), 0 2px 0 rgba(0, 0, 0, 0.08);
+  text-shadow: 0 0 20px rgba(206, 17, 38, 0.35), 0 0 34px rgba(0, 99, 65, 0.3), 0 2px 0 rgba(0, 0, 0, 0.08);
   line-height: 1.05;
 }
 
 .title-flourish {
-  width: 120px;
-  height: 5px;
-  margin: 12px auto 0;
+  width: 140px;
+  height: 6px;
+  margin: 14px auto 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--gold-bg));
+  overflow: hidden;
+  background: linear-gradient(
+    90deg,
+    #006341 0%, #006341 33%,
+    #ffffff 33%, #ffffff 67%,
+    #ce1126 67%, #ce1126 100%
+  );
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .subtitle {

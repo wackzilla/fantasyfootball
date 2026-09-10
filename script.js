@@ -134,12 +134,13 @@ function extractLeagueLeaderPhoto(rows) {
   return row ? resolvePhotoCandidates((row[1] || "").trim(), base) : [];
 }
 
-// Turns a sheet's photo cell into a list of image URLs to try, in
-// order. If it's already a full link (starts with http), that's the
-// only candidate — used as-is. Otherwise it's treated as a username
+// Turns a sheet's photo cell (or, for the standings/podium photo, a
+// coach's name when there's no override) into a list of image URLs to
+// try, in order. If it's already a full link (starts with http), that's
+// the only candidate — used as-is. Otherwise it's treated as a username
 // and turned into a standard photo link using the given base —
-// PHOTO_REPO_BASE for League Leader, or PODIUM_PHOTO_REPO_BASE for the
-// per-coach Photo column (see data.js) — tried as .jpg, .jpeg, then
+// PHOTO_REPO_BASE for League Leader, or PODIUM_PHOTO_REPO_BASE for
+// standings/podium photos (see data.js) — tried as .jpg, .jpeg, then
 // .png, since it's easy to upload a photo as the "wrong" file type
 // without noticing.
 function resolvePhotoCandidates(value, base) {
@@ -203,9 +204,12 @@ function renderStandings(rows, head, body) {
       && !/^commish\s+message$/i.test(first);
   });
 
-  // Optional "Photo" column, one per coach, used for the weekly podium
-  // below. Not required — coaches without one just get a default
-  // silhouette on the podium.
+  // Optional "Photo" column, one per coach. Not required anymore — by
+  // default, each coach's podium/standings photo is looked up straight
+  // from their Coach name (column A), matched to a file uploaded as
+  // profpic_<coach name, lowercase>. A "Photo" column, if present and
+  // filled in for a given coach, overrides that (e.g. to paste a full
+  // image link, or use a different username than the Coach cell).
   const photoColIndex = header.findIndex(label => (label || "").trim().toLowerCase() === "photo");
 
   // Only keep week columns where at least one coach has a result —
@@ -226,7 +230,8 @@ function renderStandings(rows, head, body) {
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
     const podiumBase = typeof PODIUM_PHOTO_REPO_BASE !== "undefined" ? PODIUM_PHOTO_REPO_BASE : "";
-    const photoCandidates = photoColIndex !== -1 ? resolvePhotoCandidates(r[photoColIndex], podiumBase) : [];
+    const photoOverride = photoColIndex !== -1 ? (r[photoColIndex] || "").trim() : "";
+    const photoCandidates = resolvePhotoCandidates(photoOverride || name, podiumBase);
     return { name, weekCells, total, photoCandidates };
   });
 
@@ -296,9 +301,10 @@ function renderStandings(rows, head, body) {
 
 // Builds the "This Week's Podium" section: the 1st/2nd/3rd place
 // finishers of the most recently played week (the highest-numbered
-// visible week column), each with their photo from the sheet's Photo
-// column — or a default silhouette if they don't have one set, or if
-// their photo fails to load.
+// visible week column), each with their photo (looked up from their
+// name, or overridden by the sheet's optional Photo column) — or a
+// default silhouette if no matching photo file exists, or if their
+// photo fails to load.
 function renderPodium(rowsData, visibleWeekColumns) {
   const section = document.getElementById("podium-section");
   const track = document.getElementById("podium");

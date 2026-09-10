@@ -38,35 +38,35 @@ const POINTS_BY_PLACE = {
 };
 
 // --------------------------------------------------------------
-// PHOTOS — just type a username, not a full link
+// PHOTOS — no Photo column needed, just name the files right
 // There are two different kinds of photo, since they're shown in two
 // different shapes on the page:
 //
 //   League Leader (the sheet row) -> the wide photo next to the
 //   season standings table. Not cropped to a circle, so a normal
-//   upright photo works fine as-is.
+//   upright photo works fine as-is. Set by typing a username into
+//   the League Leader row (see GOOGLE SHEET, below).
 //
-//   Photo (the per-coach column) -> the small circular headshot on
-//   "This Week's Podium." Crop this one square with the face centered
-//   before uploading, so it doesn't get awkwardly cut off.
+//   Standings / podium photo -> the small circular headshot next to
+//   a coach's name in the standings table, and on "This Week's
+//   Podium." Crop this one square with the face centered before
+//   uploading, so it doesn't get awkwardly cut off. This one is
+//   automatic — it's looked up straight from that coach's name in
+//   the Coach column, no separate column needed.
 //
-// For either one, just type that coach's username instead of pasting
-// the whole GitHub link, e.g. typing "DaBears4141" for League Leader
-// is the same as pasting:
-//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_dabears4141.jpg
-// and typing "DaBears4141" in the Photo column is the same as pasting:
-//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_dabears4141.jpg
-//
-// That means every photo file uploaded to the repo needs to be named
-// to match — "currentleader_" + username for League Leader photos,
-// "profpic_" + username for podium photos, both all lowercase, e.g.
-// currentleader_dabears4141.jpg and profpic_dabears4141.png. The file
+// Either way, the photo file uploaded to the repo just needs to be
+// named to match — "currentleader_" + username for the League Leader
+// photo, "profpic_" + coach name for standings/podium photos, both
+// all lowercase, e.g. currentleader_dabears4141.jpg and
+// profpic_dabears4141.png for a coach named "DaBears4141". The file
 // extension doesn't matter — .jpg, .jpeg, and .png are all tried
 // automatically, so it's fine if a photo happens to save as one type
-// or another. If you'd rather paste a full link instead (a photo
-// hosted somewhere else, etc.), that still works too, for either one —
-// anything starting with "http" is used as-is instead of being turned
-// into a username-based link.
+// or another.
+//
+// If a coach's photo needs a different name than their Coach cell
+// (or you'd rather paste a full link to a photo hosted elsewhere),
+// you can still add an optional "Photo" column next to Coach and
+// fill it in just for that coach — see GOOGLE SHEET, below.
 // --------------------------------------------------------------
 const PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_";
 const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_";
@@ -81,9 +81,9 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // Your sheet should have one row per coach, with a "Coach" header
 // row above them:
 //
-//   Coach                 | Week 1 | Week 2 | Week 3 | ...
-//   Ally (allydee18)      |   2    |        |        |
-//   Tate (tateboyce)      |   4    |        |        |
+//   Coach          | Week 1 | Week 2 | Week 3 | ...
+//   allydee18      |   2    |        |        |
+//   tateboyce      |   4    |        |        |
 //   ...
 //
 // Leave a cell blank for a coach who hasn't played that week yet
@@ -111,16 +111,21 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // terminal-style box on the page. Leave the row out (or the cell
 // blank) to hide that section entirely.
 //
-// You can also add a "Photo" COLUMN (not a row) next to "Coach" in
-// the standings table itself, one username per coach:
+// Standings/podium photos don't need a column at all — they're looked
+// up automatically from each coach's name (see PHOTOS, above). A
+// coach named "allydee18" just needs a photo uploaded as
+// profpic_allydee18, and it'll show up next to their name in the
+// table and on "This Week's Podium" whenever they finish 1st/2nd/3rd.
+// No matching photo file? They just get a default silhouette instead
+// — totally fine, no photo required.
 //
-//   Coach                 | Photo        | Week 1 | ...
-//   Ally (allydee18)      | allydee18    | 2 |
+// If you ever need to override that for one coach — a different
+// photo name than their Coach cell, or a full link to a photo hosted
+// elsewhere — add an optional "Photo" COLUMN next to "Coach" and
+// fill it in just for that coach; leave it blank for everyone else:
 //
-// This powers "This Week's Podium" near the top of the page, which
-// automatically shows the 1st/2nd/3rd place finishers of the most
-// recently played week with their photo from this column. Leave a
-// coach's Photo cell blank and they just get a default silhouette
-// on the podium instead — totally fine, no photo required.
+//   Coach          | Photo           | Week 1 | ...
+//   allydee18      |                 | 2      |
+//   tateboyce      | tates-real-pic  | 4      |
 // --------------------------------------------------------------
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/export?format=csv&gid=1064215180";
