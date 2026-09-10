@@ -3,8 +3,6 @@
 // and your coaches + weekly results live in your Google Sheet.
 
 document.addEventListener("DOMContentLoaded", () => {
-  initPasscodeGate();
-
   // League name
   document.getElementById("league-name").textContent = LEAGUE_NAME;
   document.title = LEAGUE_NAME + " — Standings";
@@ -16,53 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadStandings();
 });
-
-// --------------------------------------------------------------
-// Passcode gate. NOTE: this is a light speed bump, not real
-// security — see the comment on SITE_PASSCODE in data.js.
-// --------------------------------------------------------------
-const PASSCODE_STORAGE_KEY = "fflSiteUnlocked";
-
-function initPasscodeGate() {
-  const gate = document.getElementById("passcode-gate");
-  if (!gate) return;
-
-  const passcode = (typeof SITE_PASSCODE !== "undefined" ? SITE_PASSCODE : "").trim();
-  if (!passcode) {
-    gate.hidden = true;
-    return;
-  }
-
-  let alreadyUnlocked = false;
-  try {
-    alreadyUnlocked = localStorage.getItem(PASSCODE_STORAGE_KEY) === passcode;
-  } catch (e) {
-    // localStorage unavailable (private browsing, etc.) — gate just
-    // won't remember between visits, which is fine, it's not real
-    // security anyway.
-  }
-
-  if (alreadyUnlocked) {
-    gate.hidden = true;
-    return;
-  }
-
-  const form = document.getElementById("passcode-form");
-  const input = document.getElementById("passcode-input");
-  const error = document.getElementById("passcode-error");
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    if (input.value.trim() === passcode) {
-      try { localStorage.setItem(PASSCODE_STORAGE_KEY, passcode); } catch (e) {}
-      gate.hidden = true;
-    } else {
-      error.hidden = false;
-      input.value = "";
-      input.focus();
-    }
-  });
-}
 
 function applyBanner(ann) {
   const banner = document.getElementById("banner");
@@ -108,7 +59,7 @@ async function loadStandings() {
   const body = document.getElementById("standings-body");
 
   if (!SHEET_CSV_URL || SHEET_CSV_URL.indexOf("PASTE_YOUR") === 0) {
-    showMessage(body, "Set SHEET_CSV_URL in data.js to connect your Google Sheet — see SETUP-GUIDE.md.");
+    showMessage(body, "Set SHEET_CSV_URL in data.js to connect your Google Sheet.");
     return;
   }
 
@@ -131,7 +82,7 @@ async function loadStandings() {
       throw new Error(
         "That link returned a web page instead of CSV data. In data.js, " +
         "SHEET_CSV_URL needs to be the CSV export/publish link, not a " +
-        "regular Sheets link — see SETUP-GUIDE.md, Part 8."
+        "regular Sheets link."
       );
     }
 
@@ -140,7 +91,7 @@ async function loadStandings() {
 
     // Optional Banner rows, a League Leader row, and a Commish Message
     // row anywhere above the "Coach" header row let the sheet control
-    // those too — see SETUP-GUIDE.md, Part 8.
+    // those too — see the Instructions tab in the sheet.
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
     applyPhoto(extractLeagueLeaderPhoto(rows));
@@ -180,7 +131,20 @@ function extractBannerRows(rows) {
 // an existing sheet unless you want to.)
 function extractLeagueLeaderPhoto(rows) {
   const row = rows.find(r => /^(league\s+leader|photo\s+url)$/i.test((r[0] || "").trim()));
-  return row ? (row[1] || "").trim() : "";
+  return row ? resolvePhotoUrl((row[1] || "").trim()) : "";
+}
+
+// Turns a sheet's Photo cell into an actual image URL. If it's already
+// a full link (starts with http), it's used as-is. Otherwise it's
+// treated as a username and turned into this repo's standard photo
+// link — see PHOTO_REPO_BASE in data.js.
+function resolvePhotoUrl(value) {
+  const v = (value || "").trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  const base = typeof PHOTO_REPO_BASE !== "undefined" ? PHOTO_REPO_BASE : "";
+  const slug = v.toLowerCase().replace(/[^a-z0-9_-]/g, "");
+  return base ? base + slug + ".jpg" : "";
 }
 
 // Looks for a row shaped like "Commish Message" anywhere in the sheet
@@ -241,7 +205,7 @@ function renderStandings(rows, head, body) {
       if (!cell.place) return sum;
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
-    const photoUrl = photoColIndex !== -1 ? (r[photoColIndex] || "").trim() : "";
+    const photoUrl = photoColIndex !== -1 ? resolvePhotoUrl(r[photoColIndex]) : "";
     return { name, weekCells, total, photoUrl };
   });
 

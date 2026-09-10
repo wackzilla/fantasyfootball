@@ -1,7 +1,7 @@
 // ============================================================
 //  SETTINGS — set these once, they rarely change.
 //  Your coaches and weekly results now live in your Google Sheet,
-//  not in this file. See SETUP-GUIDE.md for how to connect it.
+//  not in this file — see the Instructions tab in that sheet.
 // ============================================================
 
 // The name shown at the top of the page.
@@ -15,7 +15,7 @@ const LEAGUE_NAME = "Viva la Fútbol";
 //   active: false -> banner is hidden (e.g. between weeks)
 //
 // You can instead control this from your Google Sheet each week —
-// see SETUP-GUIDE.md, Part 8, "Adding the banner to the sheet."
+// see the Instructions tab in that sheet for the Banner rows.
 // If your sheet has Banner rows, they override what's set here;
 // this is just what shows before the sheet loads, or if you never
 // add Banner rows to the sheet at all.
@@ -38,28 +38,26 @@ const POINTS_BY_PLACE = {
 };
 
 // --------------------------------------------------------------
-// SITE PASSCODE (very basic — read this before relying on it)
-// If set, visitors must enter this code once per browser before
-// they can see the site. Leave as "" (empty quotes) to disable
-// the passcode screen entirely.
+// PHOTOS — just type a username, not a full link
+// For the "League Leader" sheet row and each coach's "Photo" column
+// (see the GOOGLE SHEET section below), you can just type a coach's
+// DraftKings username instead of pasting the whole GitHub link, e.g.
+// typing "DaBears4141" is the same as pasting:
+//   https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_dabears4141.jpg
 //
-// IMPORTANT: this is NOT real security. This is a public static
-// site with no server, login system, or database behind it —
-// anyone who opens their browser's "View Page Source" can read
-// this code directly out of the page in about five seconds, the
-// same way you're reading it here. It's a speed bump to keep
-// search engines and people who stumble onto the link by accident
-// out, not protection against anyone who's actually trying to get
-// in. Since nothing on this site is sensitive (it's fantasy
-// football standings), that trade-off is fine — just don't treat
-// this as if it were a real password.
+// That means every photo file in the repo needs to be named
+// "currentleader_" + their username (all lowercase) + ".jpg" — e.g.
+// currentleader_dabears4141.jpg — uploaded to the repo root. If you'd
+// rather paste a full link instead (a different file type, a photo
+// hosted somewhere else, etc.), that still works too — anything
+// starting with "http" is used as-is instead of being turned into a
+// username-based link.
 // --------------------------------------------------------------
-const SITE_PASSCODE = "1941";
+const PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_";
 
 // --------------------------------------------------------------
 // GOOGLE SHEET
-// Paste your sheet's CSV export link here. See SETUP-GUIDE.md,
-// Part 8, for exactly how to get this link — it must be the CSV
+// Paste your sheet's CSV export link here — it must be the CSV
 // link (contains "format=csv" or "output=csv"), not a regular
 // docs.google.com/.../edit link, or the page won't be able to
 // read it.
@@ -84,24 +82,24 @@ const SITE_PASSCODE = "1941";
 //   Banner Active   | TRUE
 //   Banner Text     | Week 3 contest is live!
 //   Banner Link     | https://www.draftkings.com/...
-//   League Leader   | https://raw.githubusercontent.com/you/repo/main/photo.jpg
+//   League Leader   | DaBears4141
 //   Commish Message | Don't forget to set your lineup by Sunday!
 //
-// For League Leader, upload an image file to your GitHub repo (same
-// as any other file — Add file -> Upload files), then use its raw
-// link. Leave the row out (or the cell blank) to show no photo. (This
-// row used to be called "Photo URL" — that name still works too, no
-// need to rename it in an existing sheet.)
+// For League Leader, just type that coach's username (see PHOTOS,
+// above) and upload their photo to the repo as currentleader_<their
+// username, lowercase>.jpg. Leave the row out (or the cell blank) to
+// show no photo. (This row used to be called "Photo URL" — that name
+// still works too, no need to rename it in an existing sheet.)
 //
 // For Commish Message, whatever you type shows in a code-block/
 // terminal-style box on the page. Leave the row out (or the cell
 // blank) to hide that section entirely.
 //
 // You can also add a "Photo" COLUMN (not a row) next to "Coach" in
-// the standings table itself, one photo link per coach:
+// the standings table itself, one username per coach:
 //
-//   Coach                 | Photo                                          | Week 1 | ...
-//   Ally (allydee18)      | https://raw.githubusercontent.com/you/repo/main/currentleader_allydee18.jpg | 2 |
+//   Coach                 | Photo        | Week 1 | ...
+//   Ally (allydee18)      | allydee18    | 2 |
 //
 // This powers "This Week's Podium" near the top of the page, which
 // automatically shows the 1st/2nd/3rd place finishers of the most
