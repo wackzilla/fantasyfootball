@@ -1,0 +1,137 @@
+:root {
+  --bg: #f4f5f7;
+  --card: #ffffff;
+  --text: #1c1f26;
+  --muted: #6b7280;
+  --accent: #1d6f42;
+  --accent-dark: #144f2f;
+  --border: #e3e5e9;
+  --gold: #f4c542;
+  --silver: #cfd4da;
+  --bronze: #d99a5b;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0 16px 48px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.site-header {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 0 8px;
+  text-align: center;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.banner {
+  max-width: 720px;
+  margin: 20px auto 0;
+}
+
+.banner a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  padding: 16px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: background 0.15s ease;
+}
+
+.banner a:hover {
+  background: var(--accent-dark);
+}
+
+.banner-arrow {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+main {
+  max-width: 720px;
+  margin: 32px auto 0;
+}
+
+.standings-section h2 {
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+thead th {
+  text-align: left;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td.rank {
+  font-weight: 700;
+  width: 48px;
+}
+
+tr.rank-1 td.rank { color: #b8860b; }
+tr.rank-2 td.rank { color: #7a7f87; }
+tr.rank-3 td.rank { color: #a5622c; }
+
+.site-footer {
+  max-width: 720px;
+  margin: 32px auto 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14161a;
+    --card: #1d2027;
+    --text: #f2f3f5;
+    --muted: #9aa0aa;
+    --border: #2b2f38;
+  }
+}

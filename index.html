@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy Contest Standings</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <h1 id="league-name">League Name</h1>
+    <p class="subtitle">Weekly DraftKings Contest — Results &amp; Standings</p>
+  </header>
+
+  <div id="banner" class="banner" hidden>
+    <a id="banner-link" href="#" target="_blank" rel="noopener">
+      <span id="banner-text"></span>
+      <span class="banner-arrow">&rarr;</span>
+    </a>
+  </div>
+
+  <main>
+    <section class="standings-section">
+      <h2>Season Standings</h2>
+      <table id="standings-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Wins</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="standings-body">
+          <!-- rows inserted by script.js -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Updated weekly &middot; last edited by the commissioner</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
