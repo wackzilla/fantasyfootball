@@ -15,15 +15,75 @@ document.addEventListener("DOMContentLoaded", () => {
   loadStandings();
 });
 
+// Keeps track of the currently-running countdown timer (if any), so a
+// second call to applyBanner (e.g. once the sheet's own Banner rows
+// load in) never leaves an old interval ticking alongside a new one.
+let countdownInterval = null;
+
 function applyBanner(ann) {
   const banner = document.getElementById("banner");
+  const countdownEl = document.getElementById("banner-countdown");
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
   if (ann && ann.active && ann.text && ann.link) {
     document.getElementById("banner-text").textContent = ann.text;
     document.getElementById("banner-link").href = ann.link;
     banner.hidden = false;
+    countdownInterval = startBannerCountdown(countdownEl, ann.deadline);
   } else {
     banner.hidden = true;
+    countdownEl.hidden = true;
+    countdownEl.textContent = "";
   }
+}
+
+// Starts a live-ticking "time left" countdown inside the banner, next
+// to the banner text, counting down to the given deadline (a date/time
+// string from the Banner Countdown row — see data.js). Returns the
+// interval ID so the caller can clear it later, or null if there's no
+// valid deadline to count down to (the countdown just stays hidden).
+function startBannerCountdown(countdownEl, deadlineValue) {
+  const deadline = deadlineValue ? new Date(deadlineValue) : null;
+  if (!deadline || isNaN(deadline.getTime())) {
+    countdownEl.hidden = true;
+    countdownEl.textContent = "";
+    return null;
+  }
+
+  const tick = () => {
+    const msLeft = deadline.getTime() - Date.now();
+    countdownEl.hidden = false;
+    if (msLeft <= 0) {
+      countdownEl.textContent = "Contest locked";
+      clearInterval(intervalId);
+      countdownInterval = null;
+      return;
+    }
+    countdownEl.textContent = "Locks in " + formatCountdown(msLeft);
+  };
+
+  tick();
+  const intervalId = setInterval(tick, 1000);
+  return intervalId;
+}
+
+// Turns a millisecond duration into a compact "1d 04h 09m 30s"-style
+// string, dropping the days/hours parts once they hit zero so it
+// doesn't show "0d 0h 5m 30s" for something locking in 5 minutes.
+function formatCountdown(ms) {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const pad = n => String(n).padStart(2, "0");
+  if (days > 0) return days + "d " + pad(hours) + "h " + pad(minutes) + "m " + pad(seconds) + "s";
+  if (hours > 0) return hours + "h " + pad(minutes) + "m " + pad(seconds) + "s";
+  return minutes + "m " + pad(seconds) + "s";
 }
 
 // Shows the "Message from the Commish" terminal box if a Commish
@@ -107,20 +167,21 @@ async function loadStandings() {
 }
 
 // Looks for rows shaped like "Banner Active" / "Banner Text" / "Banner
-// Link" anywhere in the sheet and turns them into a banner object.
-// Returns null if none of those rows are present (so the caller keeps
-// whatever banner data.js already set).
+// Link" / "Banner Countdown" anywhere in the sheet and turns them into
+// a banner object. Returns null if none of those rows are present (so
+// the caller keeps whatever banner data.js already set).
 function extractBannerRows(rows) {
   const map = {};
   rows.forEach(r => {
-    const match = /^banner\s+(active|text|link)$/i.exec((r[0] || "").trim());
+    const match = /^banner\s+(active|text|link|countdown)$/i.exec((r[0] || "").trim());
     if (match) map[match[1].toLowerCase()] = (r[1] || "").trim();
   });
-  if (!map.active && !map.text && !map.link) return null;
+  if (!map.active && !map.text && !map.link && !map.countdown) return null;
   return {
     active: /^(true|yes|1|on)$/i.test(map.active || ""),
     text: map.text || "",
     link: map.link || "",
+    deadline: map.countdown || "",
   };
 }
 
@@ -199,7 +260,7 @@ function renderStandings(rows, head, body) {
   const coachRows = rows.slice(headerIndex + 1).filter(r => {
     const first = (r[0] || "").trim();
     return first !== ""
-      && !/^banner\s+(active|text|link)$/i.test(first)
+      && !/^banner\s+(active|text|link|countdown)$/i.test(first)
       && !/^(league\s+leader|photo\s+url)$/i.test(first)
       && !/^commish\s+message$/i.test(first);
   });

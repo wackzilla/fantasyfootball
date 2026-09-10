@@ -88,6 +88,25 @@ body {
   background: var(--accent-dark);
 }
 
+.banner-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+.banner-countdown {
+  font-family: "Space Mono", "Courier New", Courier, monospace;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
 .banner-arrow {
   font-size: 1.1rem;
   flex-shrink: 0;

@@ -10,9 +10,16 @@ const LEAGUE_NAME = "Viva la Fútbol";
 // --------------------------------------------------------------
 // THIS WEEK'S ANNOUNCEMENT BANNER (fallback / default)
 // Shows a highlighted bar at the top of the page with a link to
-// this week's DraftKings contest.
+// this week's DraftKings contest, and optionally a live countdown
+// ticking down to when entries lock.
 //   active: true  -> banner is shown
 //   active: false -> banner is hidden (e.g. between weeks)
+//   deadline: when entries lock, e.g. "2026-09-14 13:00:00" — shows a
+//     live "Locks in 1d 04h 09m 30s" countdown next to the banner
+//     text that ticks down by the second. Leave it "" for no
+//     countdown. Typed in your own local time (whatever timezone
+//     you're in when you set it) — every visitor's browser converts
+//     it to their own clock automatically.
 //
 // You can instead control this from your Google Sheet each week —
 // see the Instructions tab in that sheet for the Banner rows.
@@ -23,7 +30,8 @@ const LEAGUE_NAME = "Viva la Fútbol";
 const ANNOUNCEMENT = {
   active: false,
   text: "Week 1 contest is live — click here to enter on DraftKings!",
-  link: "https://www.draftkings.com/"
+  link: "https://www.draftkings.com/",
+  deadline: ""
 };
 
 // --------------------------------------------------------------
@@ -95,11 +103,19 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // to show a photo to the left of the standings table, and/or to
 // show a "message from the Commish" text box on the page:
 //
-//   Banner Active   | TRUE
-//   Banner Text     | Week 3 contest is live!
-//   Banner Link     | https://www.draftkings.com/...
-//   League Leader   | DaBears4141
-//   Commish Message | Don't forget to set your lineup by Sunday!
+//   Banner Active    | TRUE
+//   Banner Text      | Week 3 contest is live!
+//   Banner Link      | https://www.draftkings.com/...
+//   Banner Countdown | 2026-09-14 13:00:00
+//   League Leader    | DaBears4141
+//   Commish Message  | Don't forget to set your lineup by Sunday!
+//
+// Banner Countdown is optional — add it to show a live "Locks in
+// 1d 04h 09m 30s" countdown next to the banner text, ticking down by
+// the second to whatever date/time you type (that's when DraftKings
+// contest entries lock). Type it in your own local time — every
+// visitor's browser converts it to their own clock automatically.
+// Leave the row out (or the cell blank) for no countdown.
 //
 // For League Leader, just type that coach's username (see PHOTOS,
 // above) and upload their photo to the repo as currentleader_<their
