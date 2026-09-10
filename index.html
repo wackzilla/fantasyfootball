@@ -6,7 +6,7 @@
 <title>Fantasy Contest Standings</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -26,6 +26,7 @@
 
   <header class="site-header">
     <h1 id="league-name">Viva la Fútbol</h1>
+    <div class="title-flourish" aria-hidden="true"></div>
     <p class="subtitle">Football is back!!!</p>
   </header>
 
@@ -37,6 +38,14 @@
   </div>
 
   <main>
+    <section id="podium-section" class="podium-section" hidden>
+      <div class="podium-header">
+        <h2>This Week's Podium</h2>
+        <span id="podium-week-label" class="podium-week-label"></span>
+      </div>
+      <div class="podium" id="podium"></div>
+    </section>
+
     <section id="commish-section" class="commish-section" hidden>
       <h2>A Message from the Commish</h2>
       <div class="terminal"><span id="commish-message" class="terminal-text"></span><span class="cursor">&#9608;</span></div>

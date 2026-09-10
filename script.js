@@ -88,8 +88,9 @@ function applyCommishMessage(message) {
   section.hidden = false;
 }
 
-// Shows the photo panel if a Photo URL was set in the sheet; hides it
-// (and gracefully falls back) if not set, or if the image fails to load.
+// Shows the photo panel if a League Leader photo was set in the sheet;
+// hides it (and gracefully falls back) if not set, or if the image fails
+// to load.
 function applyPhoto(url) {
   const panel = document.getElementById("photo-panel");
   const img = document.getElementById("team-photo");
@@ -137,12 +138,12 @@ async function loadStandings() {
     const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
     if (rows.length < 2) throw new Error("Sheet looks empty");
 
-    // Optional Banner rows, a Photo URL row, and a Commish Message row
-    // anywhere above the "Coach" header row let the sheet control
+    // Optional Banner rows, a League Leader row, and a Commish Message
+    // row anywhere above the "Coach" header row let the sheet control
     // those too — see SETUP-GUIDE.md, Part 8.
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
-    applyPhoto(extractPhotoUrl(rows));
+    applyPhoto(extractLeagueLeaderPhoto(rows));
     applyCommishMessage(extractCommishMessage(rows));
 
     renderStandings(rows, head, body);
@@ -173,10 +174,12 @@ function extractBannerRows(rows) {
   };
 }
 
-// Looks for a row shaped like "Photo URL" anywhere in the sheet and
-// returns its value, or "" if there isn't one.
-function extractPhotoUrl(rows) {
-  const row = rows.find(r => /^photo\s+url$/i.test((r[0] || "").trim()));
+// Looks for a row shaped like "League Leader" anywhere in the sheet and
+// returns its value, or "" if there isn't one. ("Photo URL" is accepted
+// too, since that was this row's name before — no need to rename it in
+// an existing sheet unless you want to.)
+function extractLeagueLeaderPhoto(rows) {
+  const row = rows.find(r => /^(league\s+leader|photo\s+url)$/i.test((r[0] || "").trim()));
   return row ? (row[1] || "").trim() : "";
 }
 
@@ -212,9 +215,14 @@ function renderStandings(rows, head, body) {
     const first = (r[0] || "").trim();
     return first !== ""
       && !/^banner\s+(active|text|link)$/i.test(first)
-      && !/^photo\s+url$/i.test(first)
+      && !/^(league\s+leader|photo\s+url)$/i.test(first)
       && !/^commish\s+message$/i.test(first);
   });
+
+  // Optional "Photo" column, one per coach, used for the weekly podium
+  // below. Not required — coaches without one just get a default
+  // silhouette on the podium.
+  const photoColIndex = header.findIndex(label => (label || "").trim().toLowerCase() === "photo");
 
   // Only keep week columns where at least one coach has a result —
   // this is what hides Week 5, Week 6, etc. before they happen.
@@ -233,7 +241,8 @@ function renderStandings(rows, head, body) {
       if (!cell.place) return sum;
       return sum + (POINTS_BY_PLACE[cell.place] || 0);
     }, 0);
-    return { name, weekCells, total };
+    const photoUrl = photoColIndex !== -1 ? (r[photoColIndex] || "").trim() : "";
+    return { name, weekCells, total, photoUrl };
   });
 
   // Highest total first; alphabetical by name as a tiebreaker.
@@ -248,6 +257,8 @@ function renderStandings(rows, head, body) {
   if (leaderNameEl) {
     leaderNameEl.textContent = rowsData.length ? rowsData[0].name : "";
   }
+
+  renderPodium(rowsData, visibleWeekColumns);
 
   // --- Header ---
   head.innerHTML = "";
@@ -279,6 +290,98 @@ function renderStandings(rows, head, body) {
     tr.innerHTML = nameCell + weekTds + totalTd;
     body.appendChild(tr);
   });
+}
+
+// Builds the "This Week's Podium" section: the 1st/2nd/3rd place
+// finishers of the most recently played week (the highest-numbered
+// visible week column), each with their photo from the sheet's Photo
+// column — or a default silhouette if they don't have one set, or if
+// their photo fails to load.
+function renderPodium(rowsData, visibleWeekColumns) {
+  const section = document.getElementById("podium-section");
+  const track = document.getElementById("podium");
+  const weekLabel = document.getElementById("podium-week-label");
+  if (!section || !track) return;
+
+  if (!visibleWeekColumns.length) {
+    section.hidden = true;
+    return;
+  }
+
+  const targetWeek = visibleWeekColumns[visibleWeekColumns.length - 1].week;
+
+  const placements = {};
+  rowsData.forEach(row => {
+    const cell = row.weekCells.find(c => c.week === targetWeek);
+    if (cell && cell.place >= 1 && cell.place <= 3 && !placements[cell.place]) {
+      placements[cell.place] = row;
+    }
+  });
+
+  if (!placements[1] && !placements[2] && !placements[3]) {
+    section.hidden = true;
+    return;
+  }
+
+  if (weekLabel) weekLabel.textContent = "Week " + targetWeek;
+
+  track.innerHTML = "";
+  [2, 1, 3].forEach(place => {
+    const row = placements[place];
+    if (!row) return;
+    track.appendChild(buildPodiumSlot(place, row));
+  });
+
+  section.hidden = false;
+}
+
+function buildPodiumSlot(place, row) {
+  const slot = document.createElement("div");
+  slot.className = "podium-slot podium-slot-" + place;
+
+  const photoWrap = document.createElement("div");
+  photoWrap.className = "podium-photo-wrap";
+  if (row.photoUrl) {
+    const img = document.createElement("img");
+    img.className = "podium-photo";
+    img.alt = row.name;
+    img.onerror = () => { img.replaceWith(makeSilhouette()); };
+    img.src = row.photoUrl;
+    photoWrap.appendChild(img);
+  } else {
+    photoWrap.appendChild(makeSilhouette());
+  }
+
+  const name = document.createElement("div");
+  name.className = "podium-name";
+  name.textContent = row.name;
+
+  const step = document.createElement("div");
+  step.className = "podium-step";
+  const medal = { 1: "\u{1F947}", 2: "\u{1F948}", 3: "\u{1F949}" }[place];
+  const label = document.createElement("span");
+  label.className = "podium-place";
+  label.textContent = medal + " " + ordinal(place);
+  step.appendChild(label);
+
+  slot.appendChild(photoWrap);
+  slot.appendChild(name);
+  slot.appendChild(step);
+  return slot;
+}
+
+// A plain default avatar for a podium coach with no photo set (or whose
+// photo failed to load) — a generic head-and-shoulders silhouette.
+function makeSilhouette() {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "podium-photo podium-silhouette");
+  svg.setAttribute("viewBox", "0 0 64 64");
+  svg.setAttribute("aria-hidden", "true");
+  svg.innerHTML =
+    '<circle class="sil-bg" cx="32" cy="32" r="32"/>' +
+    '<circle class="sil-fg" cx="32" cy="25" r="12"/>' +
+    '<path class="sil-fg" d="M8 58c2-14 14-22 24-22s22 8 24 22"/>';
+  return svg;
 }
 
 function showMessage(body, text) {

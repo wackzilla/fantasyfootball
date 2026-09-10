@@ -34,12 +34,26 @@ body {
 
 .site-header h1 {
   margin: 0;
-  font-size: 2rem;
-  letter-spacing: -0.02em;
+  font-family: "Anton", "Arial Narrow", Impact, sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-shadow: 0 0 20px rgba(244, 197, 66, 0.45), 0 2px 0 rgba(0, 0, 0, 0.08);
+  line-height: 1.05;
+}
+
+.title-flourish {
+  width: 120px;
+  height: 5px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--gold-bg));
 }
 
 .subtitle {
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   color: var(--muted);
   font-size: 0.95rem;
 }
@@ -75,6 +89,154 @@ body {
 main {
   max-width: 1100px;
   margin: 32px auto 0;
+}
+
+/* Weekly podium — top 3 finishers of the most recently played week,
+   with photos (or a default silhouette) from the sheet's Photo column. */
+.podium-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.podium-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.podium-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.podium-week-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 18px;
+}
+
+.podium-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 130px;
+}
+
+.podium-photo-wrap {
+  margin-bottom: 8px;
+}
+
+.podium-photo {
+  display: block;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--card);
+  border: 3px solid var(--border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.podium-slot-1 .podium-photo {
+  width: 108px;
+  height: 108px;
+  border-color: var(--gold-bg);
+}
+
+.podium-slot-2 .podium-photo {
+  border-color: var(--silver-bg);
+}
+
+.podium-slot-3 .podium-photo {
+  border-color: var(--bronze-bg);
+}
+
+.podium-silhouette .sil-bg {
+  fill: var(--border);
+}
+
+.podium-silhouette .sil-fg {
+  fill: var(--card);
+}
+
+.podium-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 8px;
+  max-width: 130px;
+  overflow-wrap: break-word;
+}
+
+.podium-step {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px 8px 0 0;
+  font-weight: 800;
+}
+
+.podium-place {
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.podium-slot-1 .podium-step {
+  height: 92px;
+  background: var(--gold-bg);
+  color: var(--gold-text);
+}
+
+.podium-slot-2 .podium-step {
+  height: 62px;
+  background: var(--silver-bg);
+  color: var(--silver-text);
+}
+
+.podium-slot-3 .podium-step {
+  height: 46px;
+  background: var(--bronze-bg);
+  color: var(--bronze-text);
+}
+
+@media (max-width: 520px) {
+  .podium {
+    gap: 10px;
+  }
+
+  .podium-slot {
+    width: 90px;
+  }
+
+  .podium-photo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .podium-slot-1 .podium-photo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .podium-name {
+    font-size: 0.76rem;
+  }
+
+  .podium-place {
+    font-size: 0.82rem;
+  }
 }
 
 .standings-layout {

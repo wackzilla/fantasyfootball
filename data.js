@@ -84,15 +84,29 @@ const SITE_PASSCODE = "1941";
 //   Banner Active   | TRUE
 //   Banner Text     | Week 3 contest is live!
 //   Banner Link     | https://www.draftkings.com/...
-//   Photo URL       | https://raw.githubusercontent.com/you/repo/main/photo.jpg
+//   League Leader   | https://raw.githubusercontent.com/you/repo/main/photo.jpg
 //   Commish Message | Don't forget to set your lineup by Sunday!
 //
-// For Photo URL, upload an image file to your GitHub repo (same as
-// any other file — Add file -> Upload files), then use its raw
-// link. Leave the row out (or the cell blank) to show no photo.
+// For League Leader, upload an image file to your GitHub repo (same
+// as any other file — Add file -> Upload files), then use its raw
+// link. Leave the row out (or the cell blank) to show no photo. (This
+// row used to be called "Photo URL" — that name still works too, no
+// need to rename it in an existing sheet.)
 //
 // For Commish Message, whatever you type shows in a code-block/
 // terminal-style box on the page. Leave the row out (or the cell
 // blank) to hide that section entirely.
+//
+// You can also add a "Photo" COLUMN (not a row) next to "Coach" in
+// the standings table itself, one photo link per coach:
+//
+//   Coach                 | Photo                                          | Week 1 | ...
+//   Ally (allydee18)      | https://raw.githubusercontent.com/you/repo/main/currentleader_allydee18.jpg | 2 |
+//
+// This powers "This Week's Podium" near the top of the page, which
+// automatically shows the 1st/2nd/3rd place finishers of the most
+// recently played week with their photo from this column. Leave a
+// coach's Photo cell blank and they just get a default silhouette
+// on the podium instead — totally fine, no photo required.
 // --------------------------------------------------------------
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1i0RPTsLocLLkUhVbfsHhdhwat_xBpcATwYkoSmd6Z4Q/export?format=csv&gid=1064215180";
