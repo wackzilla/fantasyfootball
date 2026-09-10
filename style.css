@@ -458,56 +458,143 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
 .trophy-badge.trophy-2 { background: var(--silver-bg); color: var(--silver-text); }
 .trophy-badge.trophy-3 { background: var(--bronze-bg); color: var(--bronze-text); }
 
-/* Commish message — deliberately a fixed dark "terminal" look
-   regardless of site theme, since that's the whole bit. */
+/* Commish message — a Windows 98-style email window, deliberately a
+   fixed retro look regardless of site theme (light or dark), since
+   that's the whole bit. */
 .commish-section {
   max-width: 1100px;
   margin: 0 auto 32px;
 }
 
-.commish-section h2 {
-  font-family: "Space Mono", "Courier New", Courier, monospace;
-  font-weight: 700;
-  font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #ffffff;
-  background: #0c0f0a;
-  margin: 0;
-  padding: 10px 20px;
-  border-radius: 10px 10px 0 0;
-  border: 1px solid #1c2418;
-  border-bottom: none;
+.win98-window {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #c0c0c0;
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #000;
+  border-bottom: 2px solid #000;
+  box-shadow:
+    inset -1px -1px 0 #808080,
+    inset 1px 1px 0 #dfdfdf,
+    2px 3px 10px rgba(0, 0, 0, 0.35);
+  font-family: Tahoma, "Segoe UI", Verdana, sans-serif;
 }
 
-.terminal {
-  background: #0c0f0a;
-  color: #ffffff;
-  font-family: "Space Mono", "Courier New", Courier, monospace;
-  font-weight: 700;
+.win98-titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.82rem;
+  padding: 4px 4px 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.win98-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win98-title::before {
+  content: "\2709  ";
+}
+
+.win98-controls {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.win98-btn {
+  width: 17px;
+  height: 15px;
+  background: #c0c0c0;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: #000;
+  line-height: 1;
+  font-family: Tahoma, sans-serif;
+}
+
+.win98-body {
+  margin: 2px;
+  background: #fff;
+  border-top: 1px solid #808080;
+  border-left: 1px solid #808080;
+  border-right: 1px solid #fff;
+  border-bottom: 1px solid #fff;
+}
+
+.email-headers {
+  background: #ece9d8;
+  border-bottom: 1px solid #aca899;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: #000;
+}
+
+.email-headers div {
+  display: flex;
+  gap: 6px;
+}
+
+.email-label {
+  font-weight: bold;
+  width: 52px;
+  flex-shrink: 0;
+}
+
+.email-body {
+  padding: 18px 20px 24px;
+  font-family: "Times New Roman", Georgia, serif;
   font-size: 1.05rem;
-  line-height: 1.6;
-  padding: 18px 20px;
-  border-radius: 0 0 10px 10px;
-  border: 1px solid #1c2418;
+  line-height: 1.7;
+  color: #111;
+}
+
+.email-message-text {
   white-space: pre-wrap;
   word-break: break-word;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  margin: 0 0 18px;
 }
 
-.terminal-text::before {
-  content: "> ";
-  opacity: 0.7;
+.email-closing,
+.email-signoff {
+  margin: 0;
 }
 
-.cursor {
-  display: inline-block;
-  animation: cursor-blink 1s step-end infinite;
+.email-signoff {
+  margin-bottom: 10px;
 }
 
-@keyframes cursor-blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+.email-signature {
+  display: block;
+  width: 200px;
+  height: auto;
+  margin: 4px 0 0;
+}
+
+@media (max-width: 520px) {
+  .email-body {
+    font-size: 0.98rem;
+    padding: 16px 14px 20px;
+  }
+
+  .email-signature {
+    width: 160px;
+  }
 }
 
 .site-footer {
