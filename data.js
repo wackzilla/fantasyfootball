@@ -47,36 +47,30 @@ const POINTS_BY_PLACE = {
 
 // --------------------------------------------------------------
 // PHOTOS — no Photo column needed, just name the files right
-// There are two different kinds of photo, since they're shown in two
-// different shapes on the page:
+// One photo per coach, shown in three places: a small circular
+// headshot next to their name in the standings table, on "This
+// Week's Podium" whenever they finish 1st/2nd/3rd, AND next to the
+// "Current Leader" label above the standings table whenever they're
+// the one on top of the season standings — that one updates
+// automatically as the points lead changes week to week, no manual
+// "who's leading" step required.
 //
-//   League Leader (the sheet row) -> the wide photo next to the
-//   season standings table. Not cropped to a circle, so a normal
-//   upright photo works fine as-is. Set by typing a username into
-//   the League Leader row (see GOOGLE SHEET, below).
-//
-//   Standings / podium photo -> the small circular headshot next to
-//   a coach's name in the standings table, and on "This Week's
-//   Podium." Crop this one square with the face centered before
-//   uploading, so it doesn't get awkwardly cut off. This one is
-//   automatic — it's looked up straight from that coach's name in
-//   the Coach column, no separate column needed.
-//
-// Either way, the photo file uploaded to the repo just needs to be
-// named to match — "currentleader_" + username for the League Leader
-// photo, "profpic_" + coach name for standings/podium photos, both
-// all lowercase, e.g. currentleader_dabears4141.jpg and
-// profpic_dabears4141.png for a coach named "DaBears4141". The file
+// It's looked up automatically from that coach's name in the Coach
+// column — a coach named "DaBears4141" just needs a photo uploaded
+// to the repo as profpic_dabears4141 (all lowercase). The file
 // extension doesn't matter — .jpg, .jpeg, and .png are all tried
 // automatically, so it's fine if a photo happens to save as one type
-// or another.
+// or another. Crop it square with the face centered before
+// uploading, so it doesn't get cut off awkwardly when shown as a
+// circle. No matching photo file? That coach just gets a default
+// silhouette (or, for the Current Leader panel, no photo shown at
+// all) — totally fine, no photo required.
 //
 // If a coach's photo needs a different name than their Coach cell
 // (or you'd rather paste a full link to a photo hosted elsewhere),
 // you can still add an optional "Photo" column next to Coach and
 // fill it in just for that coach — see GOOGLE SHEET, below.
 // --------------------------------------------------------------
-const PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/currentleader_";
 const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_";
 
 // --------------------------------------------------------------
@@ -98,16 +92,14 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // — the page automatically only shows weeks with at least one
 // result filled in, and skips blank cells for anyone else.
 //
-// Optionally, add rows ABOVE the "Coach" row to control the
-// banner from the sheet instead of the ANNOUNCEMENT block above,
-// to show a photo to the left of the standings table, and/or to
+// Optionally, add rows ABOVE the "Coach" row to control the banner
+// from the sheet instead of the ANNOUNCEMENT block above, and/or to
 // show a "message from the Commish" text box on the page:
 //
 //   Banner Active    | TRUE
 //   Banner Text      | Week 3 contest is live!
 //   Banner Link      | https://www.draftkings.com/...
 //   Banner Countdown | 2026-09-14 13:00:00
-//   League Leader    | DaBears4141
 //   Commish Message  | Don't forget to set your lineup by Sunday!
 //   Commish Subject  | Week 3 Power Rankings + a PSA
 //
@@ -118,12 +110,6 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // visitor's browser converts it to their own clock automatically.
 // Leave the row out (or the cell blank) for no countdown.
 //
-// For League Leader, just type that coach's username (see PHOTOS,
-// above) and upload their photo to the repo as currentleader_<their
-// username, lowercase>.jpg. Leave the row out (or the cell blank) to
-// show no photo. (This row used to be called "Photo URL" — that name
-// still works too, no need to rename it in an existing sheet.)
-//
 // For Commish Message, whatever you type shows on the page as the
 // body of a fake email in a retro Windows-98-style window, addressed
 // to "All Coaches," CC'd to Roger Goodell, and signed off by "The
@@ -131,13 +117,22 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // blank and it just says "League Update"). Leave the Commish Message
 // row out (or the cell blank) to hide that section entirely.
 //
+// There's no "League Leader" row anymore — the wide photo above the
+// standings table now automatically follows whoever's actually on
+// top of the season standings, using that same coach's own photo
+// (see PHOTOS, above). No manual step each week; it just follows the
+// points lead. (If your sheet still has an old League Leader or
+// Photo URL row left over, it's simply ignored now.)
+//
 // Standings/podium photos don't need a column at all — they're looked
 // up automatically from each coach's name (see PHOTOS, above). A
 // coach named "allydee18" just needs a photo uploaded as
 // profpic_allydee18, and it'll show up next to their name in the
-// table and on "This Week's Podium" whenever they finish 1st/2nd/3rd.
+// table, on "This Week's Podium" whenever they finish 1st/2nd/3rd,
+// and above the standings table whenever they're the season leader.
 // No matching photo file? They just get a default silhouette instead
-// — totally fine, no photo required.
+// (or, for the Current Leader panel, no photo at all) — totally
+// fine, no photo required.
 //
 // If you ever need to override that for one coach — a different
 // photo name than their Coach cell, or a full link to a photo hosted

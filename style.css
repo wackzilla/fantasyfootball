@@ -282,6 +282,26 @@ main {
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
+/* Shown in place of the photo when the current leader doesn't have a
+   matching profpic_ file uploaded yet. */
+.leader-photo-silhouette {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.leader-photo-silhouette .sil-bg {
+  fill: var(--border);
+}
+
+.leader-photo-silhouette .sil-fg {
+  fill: var(--card);
+}
+
 .leader-block {
   text-align: center;
   margin-bottom: 10px;

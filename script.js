@@ -102,9 +102,14 @@ function applyCommishMessage(commish) {
   section.hidden = false;
 }
 
-// Shows the photo panel if a League Leader photo was set in the sheet;
-// hides it (and gracefully falls back) if not set, or if none of the
-// candidate image URLs (see resolvePhotoCandidates) load successfully.
+// Shows the photo panel with the current points leader's own photo —
+// the same one used for their standings/podium avatar (see
+// renderStandings) — automatically following whoever's actually on
+// top. Falls back to a default silhouette (rather than hiding the
+// whole panel) if that coach has no matching photo file, or none of
+// the candidate image URLs (see resolvePhotoCandidates) load
+// successfully; only hides the panel entirely if there's no leader
+// at all (an empty standings table).
 function applyPhoto(candidates) {
   const panel = document.getElementById("photo-panel");
   const img = document.getElementById("team-photo");
@@ -112,8 +117,10 @@ function applyPhoto(candidates) {
     panel.hidden = true;
     return;
   }
-  img.onload = () => { panel.hidden = false; };
-  loadImageWithFallback(img, candidates, () => { panel.hidden = true; });
+  panel.hidden = false;
+  loadImageWithFallback(img, candidates, () => {
+    img.replaceWith(makeSilhouette("leader-photo-silhouette"));
+  });
 }
 
 async function loadStandings() {
@@ -151,12 +158,13 @@ async function loadStandings() {
     const rows = parseCSV(csvText).filter(r => r.some(cell => cell.trim() !== ""));
     if (rows.length < 2) throw new Error("Sheet looks empty");
 
-    // Optional Banner rows, a League Leader row, and a Commish Message
-    // row anywhere above the "Coach" header row let the sheet control
-    // those too — see the Instructions tab in the sheet.
+    // Optional Banner rows and a Commish Message row anywhere above the
+    // "Coach" header row let the sheet control those too — see the
+    // Instructions tab in the sheet. (The Current Leader photo isn't
+    // set from a row anymore — renderStandings below sets it straight
+    // from whoever's actually leading.)
     const bannerFromSheet = extractBannerRows(rows);
     if (bannerFromSheet) applyBanner(bannerFromSheet);
-    applyPhoto(extractLeagueLeaderPhoto(rows));
     applyCommishMessage({
       message: extractCommishMessage(rows),
       subject: extractCommishSubject(rows),
@@ -191,25 +199,14 @@ function extractBannerRows(rows) {
   };
 }
 
-// Looks for a row shaped like "League Leader" anywhere in the sheet and
-// returns a list of image URLs to try, or [] if there isn't one.
-// ("Photo URL" is accepted too, since that was this row's name before —
-// no need to rename it in an existing sheet unless you want to.)
-function extractLeagueLeaderPhoto(rows) {
-  const row = rows.find(r => /^(league\s+leader|photo\s+url)$/i.test((r[0] || "").trim()));
-  const base = typeof PHOTO_REPO_BASE !== "undefined" ? PHOTO_REPO_BASE : "";
-  return row ? resolvePhotoCandidates((row[1] || "").trim(), base) : [];
-}
-
-// Turns a sheet's photo cell (or, for the standings/podium photo, a
-// coach's name when there's no override) into a list of image URLs to
-// try, in order. If it's already a full link (starts with http), that's
-// the only candidate — used as-is. Otherwise it's treated as a username
-// and turned into a standard photo link using the given base —
-// PHOTO_REPO_BASE for League Leader, or PODIUM_PHOTO_REPO_BASE for
-// standings/podium photos (see data.js) — tried as .jpg, .jpeg, then
-// .png, since it's easy to upload a photo as the "wrong" file type
-// without noticing.
+// Turns a sheet's photo cell (or a coach's name, when there's no
+// override) into a list of image URLs to try, in order. If it's
+// already a full link (starts with http), that's the only candidate —
+// used as-is. Otherwise it's treated as a username and turned into a
+// standard photo link using PODIUM_PHOTO_REPO_BASE (see data.js) —
+// the one base now used for every standings/podium/leader photo —
+// tried as .jpg, .jpeg, then .png, since it's easy to upload a photo
+// as the "wrong" file type without noticing.
 function resolvePhotoCandidates(value, base) {
   const v = (value || "").trim();
   if (!v) return [];
@@ -270,8 +267,11 @@ function renderStandings(rows, head, body) {
   weekColumns.sort((a, b) => a.week - b.week);
 
   // One data row per coach (column A = coach name). Skip blank rows and
-  // any stray meta row (Banner/Photo URL/Commish Message), in case one
-  // ended up below the header.
+  // any stray meta row (Banner/Commish Message), in case one ended up
+  // below the header. "League Leader" / "Photo URL" are matched too,
+  // in case an older sheet still has that row left over from before
+  // the Current Leader photo became automatic — it's simply ignored
+  // now rather than treated as a coach.
   const coachRows = rows.slice(headerIndex + 1).filter(r => {
     const first = (r[0] || "").trim();
     return first !== ""
@@ -317,12 +317,15 @@ function renderStandings(rows, head, body) {
     return a.name.localeCompare(b.name);
   });
 
-  // Whoever ends up on top after sorting is shown as the "Current
-  // Leader" above the photo, if a photo is showing.
+  // Whoever ends up on top after sorting is the "Current Leader" —
+  // shown with their own standings/podium photo (or no panel at all,
+  // if they don't have one), automatically following the points lead
+  // as it changes week to week.
   const leaderNameEl = document.getElementById("leader-name");
   if (leaderNameEl) {
     leaderNameEl.textContent = rowsData.length ? rowsData[0].name : "";
   }
+  applyPhoto(rowsData.length ? rowsData[0].photoCandidates : []);
 
   renderPodium(rowsData, visibleWeekColumns);
 

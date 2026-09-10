@@ -1,81 +1,88 @@
-Fantasy Football Site — How This Sheet Works
+# Fantasy Contest Site
 
-HOW TO USE THIS FILE
-1. Click the "Fantasy Standings" tab below.
-2. Click cell A1, then select the whole filled-in range (A1 down through
-    the last coach row, and across through the last week column).
-    Easiest way: click cell A1, then press Ctrl+Shift+End
-    (Cmd+Shift+End on Mac) to select to the last used cell.
-3. Copy (Ctrl+C / Cmd+C).
-4. In your Google Sheet, click cell A1 and paste (Ctrl+V / Cmd+V).
-    (This also copies the green header highlighting below.)
+A plain static website — no build tools, no frameworks, no server. Just
+HTML/CSS/JS files that you host for free on GitHub Pages, with an optional
+custom domain on top.
 
-BANNER  (rows 1–4: Banner Active / Text / Link / Countdown)
-Controls the announcement bar at the top of your website. Edit
-Banner Text and Banner Link each week, and set Banner Active to
-TRUE or FALSE to show or hide it.
+**Total cost: $0/year on the free subdomain, or ~$10–15/year if you add a
+custom domain.**
 
-Banner Countdown is optional -- fill it in with a date/time (e.g.
-2026-09-14 13:00:00) and the banner shows a live "Locks in
-1d 04h 09m 30s" countdown next to the banner text, ticking down
-by the second to that moment -- handy for a DraftKings entry
-deadline. Type it in your own local time; every visitor's
-browser converts it to their own clock automatically. Leave it
-blank for no countdown.
+## What's in this folder
 
-LEAGUE LEADER  (row 5)
-Shows a wide photo to the left of the standings table, with a
-"Current Leader" label above it -- NOT cropped to a circle, so a
-normal upright photo works fine as-is. Just type that coach's
-username here (e.g. DaBears4141) and upload their photo to the
-repo named currentleader_<username, lowercase> (e.g.
-currentleader_dabears4141). The file extension doesn't matter --
-.jpg, .jpeg, and .png are all tried automatically. Leave it
-blank to show no photo. (You can still paste a full image link
-instead if you'd rather -- anything starting with http is used
-as-is.)
+- `index.html` — the page structure (you shouldn't need to touch this)
+- `style.css` — styling (you shouldn't need to touch this)
+- `script.js` — fetches your Google Sheet and renders the table (you
+  shouldn't need to touch this)
+- `data.js` — settings you set once: league name, announcement banner,
+  points-per-place, and the link to your published Google Sheet
+- `CNAME` — only used if you add a custom domain (see below)
 
-COMMISH MESSAGE + SUBJECT  (rows 6–7)
-Whatever you type in Commish Message shows on the page as the
-body of a fake email, in a retro Windows-98-style window --
-addressed "To: All Coaches," CC'd to Roger Goodell, and signed
-off by "The Commish" with a fancy signature. Commish Subject
-sets that email's Subject line -- leave it blank and it just
-says "League Update." Leave the Commish Message row out (or
-the cell blank) to hide that section entirely.
+Weekly results themselves live in your Google Sheet, not in these files
+— see the Instructions tab in your sheet if you need a refresher on how
+it's wired up.
 
-STANDINGS TABLE + STANDINGS/PODIUM PHOTOS  (row 9 down)
-Row 9 is the header row (Coach, Week 1, Week 2, ...). Rows 10+
-are your coaches, one per row, with real Week 1 results already
-filled in as a starting point.
+## Part 1: Publish it for free with GitHub Pages
 
-No Photo column needed -- each coach's small CIRCULAR headshot
-(shown next to their name in the standings table, and on "This
-Week's Podium" whenever they finish 1st/2nd/3rd) is looked up
-automatically from their name in the Coach column. A coach
-named "allydee18" just needs a photo uploaded to the repo as
-profpic_<their name, lowercase> (e.g. profpic_allydee18). The
-file extension doesn't matter -- .jpg, .jpeg, and .png are all
-tried automatically. Since this one gets cropped into a circle,
-crop the photo yourself first -- a square image with the face
-centered -- so it doesn't get cut off awkwardly. No matching
-photo file? That coach just gets a default silhouette instead
--- totally fine, no photo required.
+1. Go to [github.com](https://github.com) and create a free account if you
+   don't have one.
+2. Click the **+** in the top right → **New repository**. Name it whatever
+   you like (e.g. `fantasy-contest`). Set it to **Public**. Create it.
+3. On the new repo's page, click **Add file → Upload files**, and drag in
+   all the files from this folder (`index.html`, `style.css`, `script.js`,
+   `data.js`). Commit the changes.
+4. Go to the repo's **Settings** tab → **Pages** (left sidebar).
+5. Under "Build and deployment", set **Source** to **Deploy from a
+   branch**, branch **main**, folder **/ (root)**. Save.
+6. Wait about a minute, then refresh that page — GitHub will show you your
+   live URL, something like:
+   `https://yourusername.github.io/fantasy-contest/`
+7. Send that link to your group. Done — that's the whole hosting bill: $0.
 
-Need to override that for one coach -- a different photo name
-than their Coach cell, or a full link to a photo hosted
-elsewhere? Add an optional "Photo" column next to "Coach" and
-fill it in just for that coach; leave it blank for everyone
-else.
+## Part 2 (optional): Add a custom domain (~$10–15/year)
 
-Each week, type that week's finishing place (1, 2, 3, ...) into
-the matching week column for each coach. Leave a cell blank for
-anyone who hasn't played that week yet.
+If you'd rather have something like `lowellfantasy.com` instead of the
+github.io link:
 
-IMPORTANT — DON'T DO THIS
-Don't rename or delete the "Fantasy Standings" tab in your Google
-Sheet once it's set up there. The website is wired to that exact
-tab by an ID number in its link, not by its name -- replacing it
-would change that ID and the site would need SHEET_CSV_URL (in
-data.js) updated to match, or it'll stop pulling in results.
-<img width="561" height="1649" alt="image" src="https://github.com/user-attachments/assets/7443474e-ee17-4b46-a0fa-5984b4166dbd" />
+1. Buy a domain from a registrar. Cheap, reputable options: **Namecheap**,
+   **Porkbun**, or **Cloudflare Registrar** (Cloudflare sells at cost, so
+   it's often the cheapest — usually $9–12/year for a `.com`).
+2. In your repo, open the `CNAME` file (included in this folder) and
+   replace its contents with just your domain, e.g.:
+   ```
+   lowellfantasy.com
+   ```
+   Upload/commit that change.
+3. In your repo's **Settings → Pages**, enter your custom domain in the
+   "Custom domain" box and save. GitHub will show you the DNS records you
+   need.
+4. In your domain registrar's DNS settings, add:
+   - Four **A records** for the root domain (`@`) pointing to GitHub
+     Pages' IPs:
+     ```
+     185.199.108.153
+     185.199.109.153
+     185.199.110.153
+     185.199.111.153
+     ```
+   - One **CNAME record** for `www` pointing to
+     `yourusername.github.io`
+5. DNS changes can take anywhere from a few minutes to a few hours to take
+   effect. Once it does, go back to Settings → Pages and check **Enforce
+   HTTPS** so the site loads securely.
+
+## Updating results each week
+
+Open your Google Sheet and type in that week's finishing place for each
+coach. That's it — no GitHub, no commits. The page automatically sorts
+and ranks everyone, and hides weeks that don't have results yet.
+
+The banner and league name still live in `data.js` in GitHub, since they
+change far less often.
+
+## Notes
+
+- This intentionally has zero dependencies and no build step, so it will
+  keep working indefinitely without maintenance.
+- If your group ever outgrows a hand-edited file (e.g. you want people to
+  submit their own picks through a form), that's a bigger step up — worth
+  a separate conversation when you get there.
