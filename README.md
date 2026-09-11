@@ -49,7 +49,7 @@ github.io link:
 2. In your repo, open the `CNAME` file (included in this folder) and
    replace its contents with just your domain, e.g.:
    ```
- footballfantasy.com
+   lowellfantasy.com
    ```
    Upload/commit that change.
 3. In your repo's **Settings → Pages**, enter your custom domain in the

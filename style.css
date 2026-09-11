@@ -20,9 +20,35 @@
 body {
   margin: 0;
   padding: 0 16px 48px;
-  background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* A photographic-style "stadium at night" backdrop: two warm stadium-
+     light flares glowing near the top corners, over a dark night sky
+     that eases down into a green turf horizon, with faint yard-line
+     ticks across the lower/turf band. Fixed so the whole scene stays
+     put while the page scrolls — background-size covers the full
+     viewport so the same composition is always in view no matter the
+     scroll position. This is a single always-on look rather than one
+     that swaps with light/dark mode, since the scene is inherently a
+     night shot; see the light-text + shadow rules below for the page
+     content that sits directly on this backdrop instead of inside a
+     card. */
+  background-color: #0a1a13;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.12) 0,
+      rgba(255, 255, 255, 0.12) 2px,
+      transparent 2px,
+      transparent 110px
+    ),
+    radial-gradient(ellipse 620px 380px at 10% 6%, rgba(255, 244, 214, 0.55), rgba(255, 244, 214, 0) 68%),
+    radial-gradient(ellipse 620px 380px at 90% 4%, rgba(255, 244, 214, 0.5), rgba(255, 244, 214, 0) 68%),
+    linear-gradient(180deg, #05090f 0%, #081b18 34%, #103b26 60%, #1d5c34 100%);
+  background-repeat: repeat-x, no-repeat, no-repeat, no-repeat;
+  background-position: bottom left, top left, top right, top left;
+  background-size: 100% 42%, 100% 100%, 100% 100%, 100% 100%;
+  background-attachment: fixed, fixed, fixed, fixed;
 }
 
 .site-header {
@@ -39,15 +65,23 @@ body {
   font-size: clamp(2.2rem, 6vw, 3.4rem);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text);
-  text-shadow: 0 0 20px rgba(206, 17, 38, 0.35), 0 0 34px rgba(0, 99, 65, 0.3), 0 2px 0 rgba(0, 0, 0, 0.08);
+  /* Sits directly on the stadium backdrop rather than inside a card, so
+     it's given a fixed light color + a solid dark shadow (in addition to
+     the decorative flag-colored glow) to stay legible over both the dark
+     sky and bright turf portions of that backdrop. */
+  color: #fbfbf8;
+  text-shadow: 0 0 20px rgba(206, 17, 38, 0.45), 0 0 34px rgba(0, 99, 65, 0.4), 0 2px 8px rgba(0, 0, 0, 0.9);
   line-height: 1.05;
 }
 
-.title-flourish {
+/* Flag-stripe divider between sections (banner, podium, commish
+   message, standings, footer). Placed as the first thing INSIDE each
+   show/hide-toggled section so it only appears when that section
+   actually does — no orphaned stripes when a section is hidden. */
+.section-divider {
   width: 140px;
   height: 6px;
-  margin: 14px auto 0;
+  margin: 0 auto 24px;
   border-radius: 999px;
   overflow: hidden;
   background: linear-gradient(
@@ -57,11 +91,13 @@ body {
     #ce1126 67%, #ce1126 100%
   );
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
 }
 
 .subtitle {
   margin: 10px 0 0;
-  color: var(--muted);
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
   font-size: 0.95rem;
 }
 
@@ -137,13 +173,15 @@ main {
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted);
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .podium-week-label {
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--accent);
+  color: #bdf0cf;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .podium {
@@ -203,6 +241,8 @@ main {
   margin-bottom: 8px;
   max-width: 130px;
   overflow-wrap: break-word;
+  color: #fbfbf8;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .podium-step {
@@ -312,6 +352,7 @@ main {
   align-items: center;
   gap: 6px;
   color: var(--gold-bg);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .wreath-icon {
@@ -325,12 +366,16 @@ main {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .leader-name {
   margin-top: 2px;
   font-size: 1.1rem;
   font-weight: 700;
+  color: #fbfbf8;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
 .standings-section {
@@ -355,13 +400,15 @@ main {
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted);
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
   margin-bottom: 4px;
 }
 
 .legend {
   margin: 0 0 12px;
-  color: var(--muted);
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
   font-size: 0.82rem;
 }
 
@@ -621,7 +668,8 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   max-width: 960px;
   margin: 32px auto 0;
   text-align: center;
-  color: var(--muted);
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
   font-size: 0.8rem;
 }
 
