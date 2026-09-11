@@ -79,18 +79,11 @@ body {
    show/hide-toggled section so it only appears when that section
    actually does — no orphaned stripes when a section is hidden. */
 .section-divider {
-  width: 140px;
-  height: 6px;
   margin: 0 auto 24px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: linear-gradient(
-    90deg,
-    #006341 0%, #006341 33%,
-    #ffffff 33%, #ffffff 67%,
-    #ce1126 67%, #ce1126 100%
-  );
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-size: 1.1rem;
+  letter-spacing: 0.3em;
+  line-height: 1;
   flex-shrink: 0;
 }
 
