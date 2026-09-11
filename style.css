@@ -277,12 +277,18 @@ main {
   color: var(--bronze-text);
 }
 
-/* Optional "Winner Quote" line under the podium (set from the sheet).
-   Sits directly on the stadium backdrop like the podium name/heading
-   above it, so it gets the same light-text + shadow treatment. */
+/* Optional "Winner's Quote" line under the podium (set from the
+   sheet), boxed up in its own opaque card — like the standings table
+   and Commish window — rather than sitting bare on the stadium
+   backdrop, so it reads like a little highlighted code/quote block. */
 .winner-quote {
   max-width: 560px;
   margin: 18px auto 0;
+  padding: 14px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
@@ -292,8 +298,7 @@ main {
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #f1f2ee;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  color: var(--muted);
   margin-bottom: 4px;
 }
 
@@ -301,8 +306,7 @@ main {
   display: block;
   font-style: italic;
   font-size: 1.05rem;
-  color: #fbfbf8;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  color: var(--text);
 }
 
 .winner-quote-text::before {
