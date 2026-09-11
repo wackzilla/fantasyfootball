@@ -4,7 +4,12 @@
 //  not in this file — see the Instructions tab in that sheet.
 // ============================================================
 
-// The name shown at the top of the page.
+// The name shown at the top of the page (fallback / default). You can
+// instead control the page's title and the line underneath it from
+// your Google Sheet with Page Title / Page Subtitle rows — see GOOGLE
+// SHEET, below. If your sheet has those rows, they override what's set
+// here; this is just what shows before the sheet loads, or if you
+// never add those rows to the sheet at all.
 const LEAGUE_NAME = "Viva la Fútbol";
 
 // --------------------------------------------------------------
@@ -88,20 +93,34 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //   tateboyce      |   4    |        |        |
 //   ...
 //
-// Leave a cell blank for a coach who hasn't played that week yet
-// — the page automatically only shows weeks with at least one
-// result filled in, and skips blank cells for anyone else.
+// Leave a cell blank for a coach who hasn't played that contest yet
+// — the page automatically only shows contest columns with at least
+// one result filled in, and skips blank cells for anyone else.
 //
-// Optionally, add rows ABOVE the "Coach" row to control the banner
-// from the sheet instead of the ANNOUNCEMENT block above, and/or to
-// show a "message from the Commish" text box on the page:
+// Each contest column's header can say whatever you want — it
+// doesn't have to say "Week N". Rename a column's header cell to
+// "NFL Season Opener", "Wild Card Round", or anything else, and the
+// standings table and "This Week's Podium" heading both show that
+// exact text, no code changes needed.
 //
+// Optionally, add rows ABOVE the "Coach" row to control the page
+// title/subtitle and the banner from the sheet instead of the
+// LEAGUE_NAME/ANNOUNCEMENT settings above, and/or to show a "message
+// from the Commish" text box on the page:
+//
+//   Page Title       | Viva la Fútbol
+//   Page Subtitle    | ¡Vámonos! Fútbol season is here.
 //   Banner Active    | TRUE
 //   Banner Text      | Week 3 contest is live!
 //   Banner Link      | https://www.draftkings.com/...
 //   Banner Countdown | 2026-09-14 13:00:00
 //   Commish Message  | Don't forget to set your lineup by Sunday!
 //   Commish Subject  | Week 3 Power Rankings + a PSA
+//
+// Page Title and Page Subtitle are both optional — leave either row
+// out (or the cell blank) to keep whatever's set in this file
+// (LEAGUE_NAME above, and the default subtitle text in index.html)
+// instead.
 //
 // Banner Countdown is optional — add it to show a live "Locks in
 // 1d 04h 09m 30s" countdown next to the banner text, ticking down by

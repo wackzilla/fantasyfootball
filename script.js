@@ -169,6 +169,10 @@ async function loadStandings() {
       message: extractCommishMessage(rows),
       subject: extractCommishSubject(rows),
     });
+    applyPageMeta({
+      title: extractPageTitle(rows),
+      subtitle: extractPageSubtitle(rows),
+    });
 
     renderStandings(rows, head, body);
   } catch (err) {
@@ -248,6 +252,39 @@ function extractCommishSubject(rows) {
   return row ? (row[1] || "").trim() : "";
 }
 
+// Looks for a row shaped like "Page Title" anywhere in the sheet and
+// returns its value, or "" if there isn't one — in which case
+// applyPageMeta leaves LEAGUE_NAME (data.js) showing instead.
+function extractPageTitle(rows) {
+  const row = rows.find(r => /^page\s+title$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
+// Looks for a row shaped like "Page Subtitle" anywhere in the sheet
+// and returns its value, or "" if there isn't one — in which case
+// applyPageMeta leaves the subtitle text already in index.html showing.
+function extractPageSubtitle(rows) {
+  const row = rows.find(r => /^page\s+subtitle$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
+// Swaps in the sheet's Page Title / Page Subtitle, if set, so the big
+// title and the line underneath it can be controlled from the sheet
+// just like everything else. Leaves whatever's already on the page
+// (LEAGUE_NAME from data.js, and index.html's default subtitle text)
+// untouched for whichever one isn't set in the sheet.
+function applyPageMeta(meta) {
+  if (meta && meta.title) {
+    const titleEl = document.getElementById("league-name");
+    if (titleEl) titleEl.textContent = meta.title;
+    document.title = meta.title + " — Standings";
+  }
+  if (meta && meta.subtitle) {
+    const subtitleEl = document.getElementById("page-subtitle");
+    if (subtitleEl) subtitleEl.textContent = meta.subtitle;
+  }
+}
+
 function renderStandings(rows, head, body) {
   // The standings table starts at whichever row's first cell says
   // "Coach" — everything before that (e.g. Banner rows) is ignored here.
@@ -258,28 +295,6 @@ function renderStandings(rows, head, body) {
   }
   const header = rows[headerIndex];
 
-  // Find every column whose header looks like "Week N" (case-insensitive).
-  const weekColumns = [];
-  header.forEach((label, colIndex) => {
-    const match = /week\s*(\d+)/i.exec(label || "");
-    if (match) weekColumns.push({ colIndex, week: parseInt(match[1], 10) });
-  });
-  weekColumns.sort((a, b) => a.week - b.week);
-
-  // One data row per coach (column A = coach name). Skip blank rows and
-  // any stray meta row (Banner/Commish Message), in case one ended up
-  // below the header. "League Leader" / "Photo URL" are matched too,
-  // in case an older sheet still has that row left over from before
-  // the Current Leader photo became automatic — it's simply ignored
-  // now rather than treated as a coach.
-  const coachRows = rows.slice(headerIndex + 1).filter(r => {
-    const first = (r[0] || "").trim();
-    return first !== ""
-      && !/^banner\s+(active|text|link|countdown)$/i.test(first)
-      && !/^(league\s+leader|photo\s+url)$/i.test(first)
-      && !/^commish\s+(message|subject)$/i.test(first);
-  });
-
   // Optional "Photo" column, one per coach. Not required anymore — by
   // default, each coach's podium/standings photo is looked up straight
   // from their Coach name (column A), matched to a file uploaded as
@@ -288,18 +303,48 @@ function renderStandings(rows, head, body) {
   // image link, or use a different username than the Coach cell).
   const photoColIndex = header.findIndex(label => (label || "").trim().toLowerCase() === "photo");
 
-  // Only keep week columns where at least one coach has a result —
-  // this is what hides Week 5, Week 6, etc. before they happen.
-  const visibleWeekColumns = weekColumns.filter(wc =>
-    coachRows.some(r => (r[wc.colIndex] || "").trim() !== "")
+  // Every other column (besides Coach, the optional Photo column, and
+  // a literal "Total" column if the sheet has one) is a contest column
+  // — shown in the table/podium using its header cell's exact text, in
+  // the same left-to-right order it's in on the sheet. This is what
+  // lets a column be named "NFL Season Opener" instead of being forced
+  // into "Week 1" — type whatever you want as that column's header in
+  // the sheet and it shows up exactly that way on the site.
+  const contestColumns = [];
+  header.forEach((label, colIndex) => {
+    if (colIndex === 0 || colIndex === photoColIndex) return;
+    const trimmed = (label || "").trim();
+    if (!trimmed || trimmed.toLowerCase() === "total") return;
+    contestColumns.push({ colIndex, label: trimmed });
+  });
+
+  // One data row per coach (column A = coach name). Skip blank rows and
+  // any stray meta row (Banner/Commish Message/Page Title/Page
+  // Subtitle), in case one ended up below the header. "League Leader" /
+  // "Photo URL" are matched too, in case an older sheet still has that
+  // row left over from before the Current Leader photo became
+  // automatic — it's simply ignored now rather than treated as a coach.
+  const coachRows = rows.slice(headerIndex + 1).filter(r => {
+    const first = (r[0] || "").trim();
+    return first !== ""
+      && !/^banner\s+(active|text|link|countdown)$/i.test(first)
+      && !/^(league\s+leader|photo\s+url)$/i.test(first)
+      && !/^commish\s+(message|subject)$/i.test(first)
+      && !/^page\s+(title|subtitle)$/i.test(first);
+  });
+
+  // Only keep contest columns where at least one coach has a result —
+  // this is what hides not-yet-played contests before they happen.
+  const visibleContestColumns = contestColumns.filter(cc =>
+    coachRows.some(r => (r[cc.colIndex] || "").trim() !== "")
   );
 
   const rowsData = coachRows.map(r => {
     const name = r[0].trim();
-    const weekCells = visibleWeekColumns.map(wc => {
-      const raw = (r[wc.colIndex] || "").trim();
+    const weekCells = visibleContestColumns.map(cc => {
+      const raw = (r[cc.colIndex] || "").trim();
       const place = raw ? parseInt(raw, 10) : undefined;
-      return { week: wc.week, place: Number.isFinite(place) ? place : undefined };
+      return { colIndex: cc.colIndex, label: cc.label, place: Number.isFinite(place) ? place : undefined };
     });
     const total = weekCells.reduce((sum, cell) => {
       if (!cell.place) return sum;
@@ -327,15 +372,24 @@ function renderStandings(rows, head, body) {
   }
   applyPhoto(rowsData.length ? rowsData[0].photoCandidates : []);
 
-  renderPodium(rowsData, visibleWeekColumns);
+  renderPodium(rowsData, visibleContestColumns);
 
-  // --- Header ---
+  // --- Header --- (each contest column's <th> uses its exact sheet
+  // header text, built as DOM text nodes rather than innerHTML so a
+  // column name is never accidentally parsed as markup.)
   head.innerHTML = "";
   const headRow = document.createElement("tr");
-  headRow.innerHTML =
-    "<th>Coach</th>" +
-    visibleWeekColumns.map(wc => `<th>Week ${wc.week}</th>`).join("") +
-    "<th>Total</th>";
+  const coachTh = document.createElement("th");
+  coachTh.textContent = "Coach";
+  headRow.appendChild(coachTh);
+  visibleContestColumns.forEach(cc => {
+    const th = document.createElement("th");
+    th.textContent = cc.label;
+    headRow.appendChild(th);
+  });
+  const totalTh = document.createElement("th");
+  totalTh.textContent = "Total";
+  headRow.appendChild(totalTh);
   head.appendChild(headRow);
 
   // --- Body ---
@@ -379,27 +433,29 @@ function renderStandings(rows, head, body) {
 }
 
 // Builds the "This Week's Podium" section: the 1st/2nd/3rd place
-// finishers of the most recently played week (the highest-numbered
-// visible week column), each with their photo (looked up from their
-// name, or overridden by the sheet's optional Photo column) — or a
-// default silhouette if no matching photo file exists, or if their
-// photo fails to load.
-function renderPodium(rowsData, visibleWeekColumns) {
+// finishers of the most recently played contest (the rightmost visible
+// contest column on the sheet), each with their photo (looked up from
+// their name, or overridden by the sheet's optional Photo column) — or
+// a default silhouette if no matching photo file exists, or if their
+// photo fails to load. The label next to the heading (e.g. "Week 3", or
+// "NFL Season Opener") is always that column's own header text from the
+// sheet, whatever it's been named.
+function renderPodium(rowsData, visibleContestColumns) {
   const section = document.getElementById("podium-section");
   const track = document.getElementById("podium");
   const weekLabel = document.getElementById("podium-week-label");
   if (!section || !track) return;
 
-  if (!visibleWeekColumns.length) {
+  if (!visibleContestColumns.length) {
     section.hidden = true;
     return;
   }
 
-  const targetWeek = visibleWeekColumns[visibleWeekColumns.length - 1].week;
+  const targetColumn = visibleContestColumns[visibleContestColumns.length - 1];
 
   const placements = {};
   rowsData.forEach(row => {
-    const cell = row.weekCells.find(c => c.week === targetWeek);
+    const cell = row.weekCells.find(c => c.colIndex === targetColumn.colIndex);
     if (cell && cell.place >= 1 && cell.place <= 3 && !placements[cell.place]) {
       placements[cell.place] = row;
     }
@@ -410,7 +466,7 @@ function renderPodium(rowsData, visibleWeekColumns) {
     return;
   }
 
-  if (weekLabel) weekLabel.textContent = "Week " + targetWeek;
+  if (weekLabel) weekLabel.textContent = targetColumn.label;
 
   track.innerHTML = "";
   [2, 1, 3].forEach(place => {
