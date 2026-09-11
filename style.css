@@ -277,6 +277,42 @@ main {
   color: var(--bronze-text);
 }
 
+/* Optional "Winner Quote" line under the podium (set from the sheet).
+   Sits directly on the stadium backdrop like the podium name/heading
+   above it, so it gets the same light-text + shadow treatment. */
+.winner-quote {
+  max-width: 560px;
+  margin: 18px auto 0;
+  text-align: center;
+}
+
+.winner-quote-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  margin-bottom: 4px;
+}
+
+.winner-quote-text {
+  display: block;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: #fbfbf8;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+}
+
+.winner-quote-text::before {
+  content: "\201C";
+}
+
+.winner-quote-text::after {
+  content: "\201D";
+}
+
 @media (max-width: 520px) {
   .podium {
     gap: 10px;

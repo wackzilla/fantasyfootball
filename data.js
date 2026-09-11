@@ -116,6 +116,7 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //   Banner Countdown | 2026-09-14 13:00:00
 //   Commish Message  | Don't forget to set your lineup by Sunday!
 //   Commish Subject  | Week 3 Power Rankings + a PSA
+//   Winner Quote     | That was one for the ages! -- tateboyce
 //
 // Page Title and Page Subtitle are both optional — leave either row
 // out (or the cell blank) to keep whatever's set in this file
@@ -135,6 +136,12 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // Commish." Commish Subject sets that email's Subject line (leave it
 // blank and it just says "League Update"). Leave the Commish Message
 // row out (or the cell blank) to hide that section entirely.
+//
+// Winner Quote is optional too — add it to show an italicized, quoted
+// line centered under "This Week's Podium" (e.g. Winner Quote |
+// That was one for the ages! -- tateboyce). It shows/hides along with
+// the podium itself, so there's no need to clear it out between weeks
+// if you'd rather just leave last week's quote in place.
 //
 // There's no "League Leader" row anymore — the wide photo above the
 // standings table now automatically follows whoever's actually on

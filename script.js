@@ -252,6 +252,30 @@ function extractCommishSubject(rows) {
   return row ? (row[1] || "").trim() : "";
 }
 
+// Looks for a row shaped like "Winner Quote" anywhere in the sheet and
+// returns its value, or "" if there isn't one (applyWinnerQuote hides
+// the quote line under the podium in that case).
+function extractWinnerQuote(rows) {
+  const row = rows.find(r => /^winner\s+quote$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
+// Shows the italicized, quoted "Winner Quote" line under the podium if
+// one is set in the sheet; hides it if not.
+function applyWinnerQuote(quote) {
+  const el = document.getElementById("winner-quote");
+  const textEl = document.getElementById("winner-quote-text");
+  if (!el || !textEl) return;
+  const trimmed = (quote || "").trim();
+  if (!trimmed) {
+    el.hidden = true;
+    textEl.textContent = "";
+    return;
+  }
+  textEl.textContent = trimmed;
+  el.hidden = false;
+}
+
 // Looks for a row shaped like "Page Title" anywhere in the sheet and
 // returns its value, or "" if there isn't one — in which case
 // applyPageMeta leaves LEAGUE_NAME (data.js) showing instead.
@@ -330,7 +354,8 @@ function renderStandings(rows, head, body) {
       && !/^banner\s+(active|text|link|countdown)$/i.test(first)
       && !/^(league\s+leader|photo\s+url)$/i.test(first)
       && !/^commish\s+(message|subject)$/i.test(first)
-      && !/^page\s+(title|subtitle)$/i.test(first);
+      && !/^page\s+(title|subtitle)$/i.test(first)
+      && !/^winner\s+quote$/i.test(first);
   });
 
   // Only keep contest columns where at least one coach has a result —
@@ -372,7 +397,7 @@ function renderStandings(rows, head, body) {
   }
   applyPhoto(rowsData.length ? rowsData[0].photoCandidates : []);
 
-  renderPodium(rowsData, visibleContestColumns);
+  renderPodium(rowsData, visibleContestColumns, extractWinnerQuote(rows));
 
   // --- Header --- (each contest column's <th> uses its exact sheet
   // header text, built as DOM text nodes rather than innerHTML so a
@@ -439,8 +464,11 @@ function renderStandings(rows, head, body) {
 // a default silhouette if no matching photo file exists, or if their
 // photo fails to load. The label next to the heading (e.g. "Week 3", or
 // "NFL Season Opener") is always that column's own header text from the
-// sheet, whatever it's been named.
-function renderPodium(rowsData, visibleContestColumns) {
+// sheet, whatever it's been named. winnerQuote (from the sheet's
+// optional Winner Quote row) shows as an italicized, quoted line
+// centered under the podium, and hides along with the rest of this
+// section when there's no podium to show.
+function renderPodium(rowsData, visibleContestColumns, winnerQuote) {
   const section = document.getElementById("podium-section");
   const track = document.getElementById("podium");
   const weekLabel = document.getElementById("podium-week-label");
@@ -448,6 +476,7 @@ function renderPodium(rowsData, visibleContestColumns) {
 
   if (!visibleContestColumns.length) {
     section.hidden = true;
+    applyWinnerQuote("");
     return;
   }
 
@@ -463,10 +492,12 @@ function renderPodium(rowsData, visibleContestColumns) {
 
   if (!placements[1] && !placements[2] && !placements[3]) {
     section.hidden = true;
+    applyWinnerQuote("");
     return;
   }
 
   if (weekLabel) weekLabel.textContent = targetColumn.label;
+  applyWinnerQuote(winnerQuote);
 
   track.innerHTML = "";
   [2, 1, 3].forEach(place => {
