@@ -619,8 +619,9 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
 
 .email-label {
   font-weight: bold;
-  width: 52px;
+  width: 66px;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .email-body {
