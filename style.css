@@ -280,10 +280,21 @@ main {
 /* Optional "Winner's Quote" line under the podium (set from the
    sheet), boxed up in its own opaque card — like the standings table
    and Commish window — rather than sitting bare on the stadium
-   backdrop, so it reads like a little highlighted code/quote block. */
-.winner-quote {
-  max-width: 560px;
+   backdrop, so it reads like a little highlighted code/quote block.
+   Flanked by a pair of gold laurel branches, mirror images of each
+   other, like a classic film-festival "award laurel." */
+.winner-quote-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  max-width: 660px;
   margin: 18px auto 0;
+}
+
+.winner-quote-card {
+  max-width: 560px;
+  margin: 0;
   padding: 14px 20px;
   background: var(--card);
   border: 1px solid var(--border);
@@ -317,6 +328,227 @@ main {
   content: "\201D";
 }
 
+.laurel {
+  flex-shrink: 0;
+  width: 46px;
+  height: auto;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.laurel-right {
+  transform: scaleX(-1);
+}
+
+.laurel-stem {
+  fill: none;
+  stroke: #a8790a;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.laurel-leaf {
+  fill: #e0b52c;
+  stroke: #a8790a;
+  stroke-width: 0.6;
+}
+
+/* "The Dumpster" — whoever finished last in the most recent contest,
+   shown peeking out of a dumpster with a poop-emoji crown. Sits
+   directly on the stadium backdrop like the podium heading above it,
+   so it gets the same light-text + shadow treatment. */
+.dumpster-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.dumpster-heading {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #f1f2ee;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+}
+
+.dumpster-block {
+  width: 220px;
+  margin: 0 auto;
+}
+
+.dumpster-scene {
+  position: relative;
+  width: 220px;
+  height: 210px;
+  margin: 0 auto;
+}
+
+.dumpster-graphic {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: block;
+}
+
+.dumpster-graphic .dg-body,
+.dumpster-graphic .dg-lid,
+.dumpster-graphic .dg-handle {
+  fill: var(--accent);
+  stroke: var(--accent-dark);
+}
+
+.dumpster-graphic .dg-rim {
+  fill: var(--accent-dark);
+}
+
+.dumpster-graphic .dg-ridge {
+  stroke: var(--accent-dark);
+}
+
+.dumpster-graphic .dg-wheel {
+  fill: #1a1a1a;
+}
+
+.dumpster-photo-row {
+  position: absolute;
+  bottom: 55px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dumpster-photo,
+.dumpster-photo-silhouette {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  background: var(--card);
+  display: block;
+  flex-shrink: 0;
+}
+
+.dumpster-photo-silhouette .sil-bg {
+  fill: var(--border);
+}
+
+.dumpster-photo-silhouette .sil-fg {
+  fill: var(--card);
+}
+
+.dumpster-crown-stack {
+  position: absolute;
+  bottom: 138px;
+  left: 50%;
+  transform: translateX(-50%);
+  line-height: 1;
+  z-index: 3;
+}
+
+.dumpster-poop-emoji {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  font-size: 34px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.dumpster-crown-emoji {
+  position: relative;
+  z-index: 2;
+  display: block;
+  font-size: 42px;
+  clip-path: inset(0 0 45% 0);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+
+.dumpster-name {
+  margin-top: 12px;
+  font-weight: 800;
+  color: #fbfbf8;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+}
+
+/* Optional "Loser's Quote" line under The Dumpster (set from the
+   sheet), boxed up the same way as the Winner's Quote card — but with
+   a cartoon stink cloud rising off the top instead of laurels. */
+.loser-quote-wrap {
+  position: relative;
+  max-width: 560px;
+  margin: 62px auto 0;
+}
+
+.loser-quote-card {
+  margin: 0;
+  padding: 14px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.loser-quote-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.loser-quote-text {
+  display: block;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--text);
+}
+
+.loser-quote-text::before {
+  content: "\201C";
+}
+
+.loser-quote-text::after {
+  content: "\201D";
+}
+
+.stink-cloud {
+  position: absolute;
+  top: -68px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 92px;
+  height: auto;
+  z-index: 0;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+}
+
+.stink-fill {
+  fill: #8fbf2f;
+}
+
+.stink-fill-light {
+  fill: #b6e043;
+}
+
+.stink-outline {
+  fill: none;
+  stroke: #5c8a1f;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
 @media (max-width: 520px) {
   .podium {
     gap: 10px;
@@ -342,6 +574,65 @@ main {
 
   .podium-place {
     font-size: 0.82rem;
+  }
+
+  .dumpster-block,
+  .dumpster-scene {
+    width: 170px;
+  }
+
+  .dumpster-scene {
+    height: 168px;
+  }
+
+  .dumpster-graphic {
+    width: 170px;
+    height: 124px;
+  }
+
+  .dumpster-photo-row {
+    bottom: 42px;
+  }
+
+  .dumpster-photo,
+  .dumpster-photo-silhouette {
+    width: 72px;
+    height: 72px;
+  }
+
+  .dumpster-crown-stack {
+    bottom: 106px;
+  }
+
+  .dumpster-poop-emoji {
+    top: 6px;
+    font-size: 28px;
+  }
+
+  .dumpster-crown-emoji {
+    font-size: 34px;
+  }
+
+  .winner-quote-wrap {
+    gap: 0;
+  }
+
+  .laurel {
+    width: 30px;
+  }
+
+  .winner-quote-card,
+  .loser-quote-card {
+    padding: 12px 14px;
+  }
+
+  .stink-cloud {
+    width: 68px;
+    top: -50px;
+  }
+
+  .loser-quote-wrap {
+    margin-top: 46px;
   }
 }
 

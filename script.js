@@ -185,21 +185,36 @@ async function loadStandings() {
 }
 
 // Looks for rows shaped like "Banner Active" / "Banner Text" / "Banner
-// Link" / "Banner Countdown" anywhere in the sheet and turns them into
-// a banner object. Returns null if none of those rows are present (so
-// the caller keeps whatever banner data.js already set).
+// Link" / "Banner Countdown Date" / "Banner Countdown Time" anywhere in
+// the sheet and turns them into a banner object. Returns null if none
+// of those rows are present (so the caller keeps whatever banner
+// data.js already set).
 function extractBannerRows(rows) {
   const map = {};
   rows.forEach(r => {
-    const match = /^banner\s+(active|text|link|countdown)$/i.exec((r[0] || "").trim());
-    if (match) map[match[1].toLowerCase()] = (r[1] || "").trim();
+    const match = /^banner\s+(active|text|link|countdown(?:\s+date|\s+time)?)$/i.exec((r[0] || "").trim());
+    if (match) map[match[1].toLowerCase().replace(/\s+/g, " ")] = (r[1] || "").trim();
   });
-  if (!map.active && !map.text && !map.link && !map.countdown) return null;
+  const hasAny = map.active || map.text || map.link || map.countdown
+    || map["countdown date"] || map["countdown time"];
+  if (!hasAny) return null;
+
+  // Countdown Date + Countdown Time are combined into the single
+  // "YYYY-MM-DD HH:MM:SS"-ish string startBannerCountdown expects.
+  // Still honors an old, un-split "Banner Countdown" row too, so a
+  // sheet that hasn't been updated to the two-cell version yet keeps
+  // working exactly as before.
+  let deadline = map.countdown || "";
+  if (map["countdown date"] || map["countdown time"]) {
+    deadline = (map["countdown date"] || "") + " " + (map["countdown time"] || "");
+    deadline = deadline.trim();
+  }
+
   return {
     active: /^(true|yes|1|on)$/i.test(map.active || ""),
     text: map.text || "",
     link: map.link || "",
-    deadline: map.countdown || "",
+    deadline,
   };
 }
 
@@ -265,6 +280,30 @@ function extractWinnerQuote(rows) {
 function applyWinnerQuote(quote) {
   const el = document.getElementById("winner-quote");
   const textEl = document.getElementById("winner-quote-text");
+  if (!el || !textEl) return;
+  const trimmed = (quote || "").trim();
+  if (!trimmed) {
+    el.hidden = true;
+    textEl.textContent = "";
+    return;
+  }
+  textEl.textContent = trimmed;
+  el.hidden = false;
+}
+
+// Looks for a row shaped like "Loser Quote" anywhere in the sheet and
+// returns its value, or "" if there isn't one (applyLoserQuote hides
+// the quote line under The Dumpster in that case).
+function extractLoserQuote(rows) {
+  const row = rows.find(r => /^loser\s+quote$/i.test((r[0] || "").trim()));
+  return row ? (row[1] || "").trim() : "";
+}
+
+// Shows the italicized, quoted "Loser Quote" line under The Dumpster if
+// one is set in the sheet; hides it if not.
+function applyLoserQuote(quote) {
+  const el = document.getElementById("loser-quote");
+  const textEl = document.getElementById("loser-quote-text");
   if (!el || !textEl) return;
   const trimmed = (quote || "").trim();
   if (!trimmed) {
@@ -351,11 +390,12 @@ function renderStandings(rows, head, body) {
   const coachRows = rows.slice(headerIndex + 1).filter(r => {
     const first = (r[0] || "").trim();
     return first !== ""
-      && !/^banner\s+(active|text|link|countdown)$/i.test(first)
+      && !/^banner\s+(active|text|link|countdown(?:\s+date|\s+time)?)$/i.test(first)
       && !/^(league\s+leader|photo\s+url)$/i.test(first)
       && !/^commish\s+(message|subject)$/i.test(first)
       && !/^page\s+(title|subtitle)$/i.test(first)
-      && !/^winner\s+quote$/i.test(first);
+      && !/^winner\s+quote$/i.test(first)
+      && !/^loser\s+quote$/i.test(first);
   });
 
   // Only keep contest columns where at least one coach has a result —
@@ -422,6 +462,7 @@ function renderStandings(rows, head, body) {
   applyPhoto(rowsData.length ? rowsData[0].photoCandidates : []);
 
   renderPodium(rowsData, visibleContestColumns, extractWinnerQuote(rows));
+  renderDumpster(rowsData, visibleContestColumns, extractLoserQuote(rows));
 
   // --- Header --- (each contest column's <th> uses its exact sheet
   // header text, built as DOM text nodes rather than innerHTML so a
@@ -572,6 +613,66 @@ function buildPodiumSlot(place, row) {
   slot.appendChild(name);
   slot.appendChild(step);
   return slot;
+}
+
+// Builds "The Dumpster": whoever finished LAST in the most recent
+// contest (the same rightmost visible contest column the podium uses),
+// shown peeking out of a dumpster graphic with a poop-emoji crown. If
+// more than one coach tied for last that week, all of them show up
+// side by side. Hides entirely if there's no contest data yet.
+// loserQuote (from the sheet's optional Loser Quote row) shows as an
+// italicized, quoted line under the dumpster, with a stink cloud
+// rising off the top of its box — hides along with the rest of this
+// section when there's no dumpster to show.
+function renderDumpster(rowsData, visibleContestColumns, loserQuote) {
+  const section = document.getElementById("dumpster-section");
+  const photoRow = document.getElementById("dumpster-photo-row");
+  const nameEl = document.getElementById("dumpster-name");
+  if (!section || !photoRow || !nameEl) return;
+
+  if (!visibleContestColumns.length) {
+    section.hidden = true;
+    applyLoserQuote("");
+    return;
+  }
+
+  const targetColumn = visibleContestColumns[visibleContestColumns.length - 1];
+
+  let worst = 0;
+  rowsData.forEach(row => {
+    const cell = row.weekCells.find(c => c.colIndex === targetColumn.colIndex);
+    if (cell && cell.place && cell.place > worst) worst = cell.place;
+  });
+
+  if (!worst) {
+    section.hidden = true;
+    applyLoserQuote("");
+    return;
+  }
+
+  const losers = rowsData.filter(row => {
+    const cell = row.weekCells.find(c => c.colIndex === targetColumn.colIndex);
+    return cell && cell.place === worst;
+  });
+
+  photoRow.innerHTML = "";
+  losers.forEach(row => {
+    if (row.photoCandidates && row.photoCandidates.length) {
+      const img = document.createElement("img");
+      img.className = "dumpster-photo";
+      img.alt = row.name;
+      loadImageWithFallback(img, row.photoCandidates, () => {
+        img.replaceWith(makeSilhouette("dumpster-photo-silhouette"));
+      });
+      photoRow.appendChild(img);
+    } else {
+      photoRow.appendChild(makeSilhouette("dumpster-photo-silhouette"));
+    }
+  });
+
+  nameEl.textContent = losers.map(row => row.name).join(" & ");
+  section.hidden = false;
+  applyLoserQuote(loserQuote);
 }
 
 // A plain default avatar for a coach with no photo set (or whose photo

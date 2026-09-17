@@ -108,27 +108,32 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // LEAGUE_NAME/ANNOUNCEMENT settings above, and/or to show a "message
 // from the Commish" text box on the page:
 //
-//   Page Title       | Viva la Fútbol
-//   Page Subtitle    | ¡Vámonos! Fútbol season is here.
-//   Banner Active    | TRUE
-//   Banner Text      | Week 3 contest is live!
-//   Banner Link      | https://www.draftkings.com/...
-//   Banner Countdown | 2026-09-14 13:00:00
-//   Commish Message  | Don't forget to set your lineup by Sunday!
-//   Commish Subject  | Week 3 Power Rankings + a PSA
-//   Winner Quote     | That was one for the ages! -- tateboyce
+//   Page Title             | Viva la Fútbol
+//   Page Subtitle          | ¡Vámonos! Fútbol season is here.
+//   Banner Active          | TRUE
+//   Banner Text            | Week 3 contest is live!
+//   Banner Link            | https://www.draftkings.com/...
+//   Banner Countdown Date  | 2026-09-14
+//   Banner Countdown Time  | 1:00 PM
+//   Commish Message        | Don't forget to set your lineup by Sunday!
+//   Commish Subject        | Week 3 Power Rankings + a PSA
+//   Winner Quote           | That was one for the ages! -- tateboyce
+//   Loser Quote            | I'll get 'em next week... -- DaBears4141
 //
 // Page Title and Page Subtitle are both optional — leave either row
 // out (or the cell blank) to keep whatever's set in this file
 // (LEAGUE_NAME above, and the default subtitle text in index.html)
 // instead.
 //
-// Banner Countdown is optional — add it to show a live "Locks in
-// 1d 04h 09m 30s" countdown next to the banner text, ticking down by
-// the second to whatever date/time you type (that's when DraftKings
-// contest entries lock). Type it in your own local time — every
-// visitor's browser converts it to their own clock automatically.
-// Leave the row out (or the cell blank) for no countdown.
+// Banner Countdown Date / Banner Countdown Time are optional — fill
+// both in to show a live "Locks in 1d 04h 09m 30s" countdown next to
+// the banner text, ticking down by the second to that moment (that's
+// when DraftKings contest entries lock). Two separate cells just so
+// each is quicker to edit week to week — Date like 2026-09-14, Time
+// like 1:00 PM (or 13:00:00, either works). Type it in your own local
+// time — every visitor's browser converts it to their own clock
+// automatically. Leave both rows out (or both cells blank) for no
+// countdown.
 //
 // For Commish Message, whatever you type shows on the page as the
 // body of a fake email in a retro Windows-98-style window, addressed
@@ -139,9 +144,21 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //
 // Winner Quote is optional too — add it to show an italicized, quoted
 // line centered under "This Week's Podium" (e.g. Winner Quote |
-// That was one for the ages! -- tateboyce). It shows/hides along with
-// the podium itself, so there's no need to clear it out between weeks
-// if you'd rather just leave last week's quote in place.
+// That was one for the ages! -- tateboyce), flanked by a pair of gold
+// laurel branches. It shows/hides along with the podium itself, so
+// there's no need to clear it out between weeks if you'd rather just
+// leave last week's quote in place.
+//
+// "The Dumpster" needs no row of its own — it's fully automatic, just
+// like the podium. It shows whoever finished LAST in that same most
+// recent contest column, peeking out of a dumpster with a poop-emoji
+// crown (everyone tied for last shows up together if there's a tie).
+//
+// Loser Quote is the Dumpster's equivalent of Winner Quote — optional,
+// shows an italicized, quoted line under The Dumpster (e.g. Loser
+// Quote | I'll get 'em next week... -- DaBears4141), with a little
+// stink cloud rising off the top of the box instead of laurels. Shows/
+// hides along with The Dumpster itself.
 //
 // There's no "League Leader" row anymore — the wide photo above the
 // standings table now automatically follows whoever's actually on
