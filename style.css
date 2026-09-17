@@ -671,20 +671,17 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   margin: 0 0 18px;
 }
 
-.email-closing,
-.email-signoff {
+.email-closing {
   margin: 0;
-}
-
-.email-signoff {
-  margin-bottom: 10px;
 }
 
 .email-signature {
   display: block;
   width: 200px;
   height: auto;
-  margin: 4px 0 0;
+  /* A couple of blank-line-ish gaps between "The All Powerful," and
+     the signature image, like there'd be room to actually sign. */
+  margin: 24px 0 0;
 }
 
 @media (max-width: 520px) {
