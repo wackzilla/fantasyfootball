@@ -614,6 +614,7 @@ main {
   right: 0;
   bottom: 100%;
   display: flex;
+  align-items: flex-end;
   transform: translateY(12px);
   z-index: 0;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
@@ -624,16 +625,28 @@ main {
   min-width: 0;
   aspect-ratio: 120 / 90;
   display: block;
-  margin-left: -14px;
+  margin-left: -30px;
+  transform-origin: 50% 100%;
 }
 
 .stink-cloud-tile:first-child {
   margin-left: 0;
 }
 
-.stink-cloud-tile:nth-child(even) {
-  transform: scaleX(-1);
-}
+/* Every tile gets its own scale/lift/tilt so the repeat reads as a
+   natural, uneven hedge instead of one uniform stamped-out shape —
+   the flips (mirrored on the even ones) add to that. The heavier
+   negative margin above overlaps them enough to close the gaps
+   between tiles. */
+.stink-cloud-tile:nth-child(1) { transform: scale(1) translateY(0); }
+.stink-cloud-tile:nth-child(2) { transform: scaleX(-1) scale(1.16) translateY(-5px) rotate(-3deg); }
+.stink-cloud-tile:nth-child(3) { transform: scale(0.88) translateY(3px) rotate(2deg); }
+.stink-cloud-tile:nth-child(4) { transform: scaleX(-1) scale(1.2) translateY(-7px) rotate(-4deg); }
+.stink-cloud-tile:nth-child(5) { transform: scale(0.92) translateY(2px) rotate(3deg); }
+.stink-cloud-tile:nth-child(6) { transform: scaleX(-1) scale(1.1) translateY(-4px) rotate(-2deg); }
+.stink-cloud-tile:nth-child(7) { transform: scale(0.86) translateY(4px) rotate(3deg); }
+.stink-cloud-tile:nth-child(8) { transform: scaleX(-1) scale(1.14) translateY(-5px) rotate(-3deg); }
+.stink-cloud-tile:nth-child(9) { transform: scale(0.9) translateY(2px) rotate(2deg); }
 
 .stink-fill {
   fill: #8fbf2f;
@@ -722,7 +735,7 @@ main {
   }
 
   .stink-cloud-tile {
-    margin-left: -8px;
+    margin-left: -18px;
   }
 
   .loser-quote-wrap {
