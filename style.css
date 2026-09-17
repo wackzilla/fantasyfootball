@@ -575,6 +575,75 @@ main {
   text-align: center;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+}
+
+/* A slow-drifting greenish gas haze inside the card — a few soft,
+   blurred blobs, each wandering along its own loose loop so they
+   never quite line up, sitting behind the text (negative z-index puts
+   it under the card's own in-flow content regardless of DOM order)
+   and clipped to the card's rounded corners by the overflow:hidden
+   above. Plain semi-transparent fills rather than a blend mode, so it
+   reads the same greenish haze over both the light and dark card. */
+.gas-cloud {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.gas-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(18px);
+}
+
+.gas-blob-1 {
+  width: 40%;
+  aspect-ratio: 1;
+  left: -8%;
+  top: -55%;
+  background: rgba(143, 191, 47, 0.55);
+  animation: gas-drift-1 9s ease-in-out infinite;
+}
+
+.gas-blob-2 {
+  width: 46%;
+  aspect-ratio: 1;
+  left: 36%;
+  top: -15%;
+  background: rgba(182, 224, 67, 0.5);
+  animation: gas-drift-2 12s ease-in-out infinite;
+}
+
+.gas-blob-3 {
+  width: 42%;
+  aspect-ratio: 1;
+  right: -8%;
+  bottom: -65%;
+  background: rgba(143, 191, 47, 0.45);
+  animation: gas-drift-3 10.5s ease-in-out infinite;
+}
+
+@keyframes gas-drift-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(18%, 12%) scale(1.15); }
+}
+
+@keyframes gas-drift-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-14%, 16%) scale(0.9); }
+}
+
+@keyframes gas-drift-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-16%, -10%) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gas-blob {
+    animation: none;
+  }
 }
 
 .loser-quote-label {
@@ -625,7 +694,7 @@ main {
   min-width: 0;
   aspect-ratio: 120 / 90;
   display: block;
-  margin-left: -30px;
+  margin-left: -38px;
   transform-origin: 50% 100%;
 }
 
@@ -635,18 +704,21 @@ main {
 
 /* Every tile gets its own scale/lift/tilt so the repeat reads as a
    natural, uneven hedge instead of one uniform stamped-out shape —
-   the flips (mirrored on the even ones) add to that. The heavier
-   negative margin above overlaps them enough to close the gaps
-   between tiles. */
+   the flips (mirrored on the even ones) add to that. Scales stay
+   fairly close to 1 (rather than dipping much smaller) since shrinking
+   a tile pulls its content in from both edges around the bottom-center
+   transform-origin, which can reopen a gap at the seam if it shrinks
+   too much; the heavier negative margin above overlaps tiles enough
+   to close the gaps between them either way. */
 .stink-cloud-tile:nth-child(1) { transform: scale(1) translateY(0); }
-.stink-cloud-tile:nth-child(2) { transform: scaleX(-1) scale(1.16) translateY(-5px) rotate(-3deg); }
-.stink-cloud-tile:nth-child(3) { transform: scale(0.88) translateY(3px) rotate(2deg); }
-.stink-cloud-tile:nth-child(4) { transform: scaleX(-1) scale(1.2) translateY(-7px) rotate(-4deg); }
-.stink-cloud-tile:nth-child(5) { transform: scale(0.92) translateY(2px) rotate(3deg); }
-.stink-cloud-tile:nth-child(6) { transform: scaleX(-1) scale(1.1) translateY(-4px) rotate(-2deg); }
-.stink-cloud-tile:nth-child(7) { transform: scale(0.86) translateY(4px) rotate(3deg); }
-.stink-cloud-tile:nth-child(8) { transform: scaleX(-1) scale(1.14) translateY(-5px) rotate(-3deg); }
-.stink-cloud-tile:nth-child(9) { transform: scale(0.9) translateY(2px) rotate(2deg); }
+.stink-cloud-tile:nth-child(2) { transform: scaleX(-1) scale(1.12) translateY(-5px) rotate(-3deg); }
+.stink-cloud-tile:nth-child(3) { transform: scale(0.96) translateY(3px) rotate(2deg); }
+.stink-cloud-tile:nth-child(4) { transform: scaleX(-1) scale(1.15) translateY(-7px) rotate(-4deg); }
+.stink-cloud-tile:nth-child(5) { transform: scale(0.98) translateY(2px) rotate(3deg); }
+.stink-cloud-tile:nth-child(6) { transform: scaleX(-1) scale(1.08) translateY(-4px) rotate(-2deg); }
+.stink-cloud-tile:nth-child(7) { transform: scale(0.95) translateY(4px) rotate(3deg); }
+.stink-cloud-tile:nth-child(8) { transform: scaleX(-1) scale(1.1) translateY(-5px) rotate(-3deg); }
+.stink-cloud-tile:nth-child(9) { transform: scale(0.97) translateY(2px) rotate(2deg); }
 
 .stink-fill {
   fill: #8fbf2f;
@@ -735,7 +807,7 @@ main {
   }
 
   .stink-cloud-tile {
-    margin-left: -18px;
+    margin-left: -24px;
   }
 
   .loser-quote-wrap {
@@ -786,17 +858,22 @@ main {
 }
 
 .leader-badge {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   color: var(--gold-bg);
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
 
-.wreath-icon {
-  width: 34px;
+.leader-wreath {
+  width: 22px;
   height: auto;
   flex-shrink: 0;
+}
+
+.leader-wreath-right {
+  transform: scaleX(-1);
 }
 
 .leader-label {
@@ -806,12 +883,16 @@ main {
   text-transform: uppercase;
   color: #f1f2ee;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
 }
 
 .leader-name {
-  margin-top: 2px;
-  font-size: 1.1rem;
-  font-weight: 700;
+  margin-top: 4px;
+  font-family: "Anton", "Arial Narrow", Impact, sans-serif;
+  font-weight: 400;
+  font-size: clamp(1.5rem, 9vw, 2rem);
+  letter-spacing: 0.02em;
+  overflow-wrap: break-word;
   color: #fbfbf8;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
 }
