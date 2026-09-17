@@ -139,6 +139,42 @@ function armCommishEnvelope() {
   observer.observe(wrap);
 }
 
+// Makes the standings (photo panel + table) open like a pair of
+// mechanical bay doors -- meeting in the middle, then sliding apart,
+// top one up and bottom one down -- as you scroll down to them (see
+// .standings-door-wrap / .standings-door in style.css for the actual
+// animation). Only runs once per page load (loadStandings only calls
+// this after a successful render, and that only happens once), and
+// skips itself entirely -- leaving the standings just sitting there,
+// visible right away -- without IntersectionObserver support or with
+// motion reduced, same safe-fallback approach as armCommishEnvelope
+// above.
+function armStandingsDoor() {
+  const wrap = document.getElementById("standings-door-wrap");
+  if (!wrap || !("IntersectionObserver" in window)) return;
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
+
+  wrap.classList.add("js-door-armed");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          wrap.classList.add("door-play");
+          observer.disconnect();
+        }
+      });
+    },
+    { threshold: 0.2 }
+  );
+  observer.observe(wrap);
+}
+
 // Shows the photo panel with the current points leader's own photo —
 // the same one used for their standings/podium avatar (see
 // renderStandings) — automatically following whoever's actually on
@@ -212,6 +248,7 @@ async function loadStandings() {
     });
 
     renderStandings(rows, head, body);
+    armStandingsDoor();
   } catch (err) {
     console.error("Couldn't load standings from Google Sheet:", err);
     const message = err && err.message && err.message.indexOf("web page instead of CSV") !== -1

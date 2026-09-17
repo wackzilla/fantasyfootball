@@ -754,6 +754,107 @@ main {
   }
 }
 
+/* The standings (photo panel + table together) open like a pair of
+   mechanical bay doors as you scroll down to them: two metal panels
+   meet in the middle over the content, then slide apart -- top one
+   up, bottom one down -- to reveal it. script.js only arms this
+   (.js-door-armed, which is what actually hides the doors' content
+   underneath up front) once the standings have real rows in them,
+   and only when JS + IntersectionObserver + prefers-reduced-motion
+   all allow it, so with JS off or motion reduced the table's just
+   there already -- no doors, nothing to trip over. */
+.standings-door-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.standings-door {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  z-index: 5;
+  pointer-events: none;
+  display: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.09) 0,
+      rgba(255, 255, 255, 0.09) 2px,
+      transparent 2px,
+      transparent 15px
+    ),
+    linear-gradient(180deg, #9a9fa8, #565a62);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.standings-door::after {
+  /* The hazard-stripe seam where the two doors meet in the middle. */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: repeating-linear-gradient(
+    45deg,
+    #f4c430 0,
+    #f4c430 10px,
+    #1a1a1a 10px,
+    #1a1a1a 20px
+  );
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+.standings-door-top {
+  top: 0;
+  transform-origin: top;
+  border-bottom: 2px solid #2c2e33;
+}
+
+.standings-door-top::after {
+  bottom: -2px;
+}
+
+.standings-door-bottom {
+  bottom: 0;
+  transform-origin: bottom;
+  border-top: 2px solid #2c2e33;
+}
+
+.standings-door-bottom::after {
+  top: -2px;
+}
+
+.standings-door-wrap.js-door-armed .standings-door {
+  display: block;
+}
+
+.standings-door-wrap.door-play .standings-door-top {
+  animation: standings-door-open-up 0.9s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+
+.standings-door-wrap.door-play .standings-door-bottom {
+  animation: standings-door-open-down 0.9s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+}
+
+@keyframes standings-door-open-up {
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes standings-door-open-down {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standings-door-wrap.js-door-armed .standings-door {
+    display: none;
+  }
+}
+
 .standings-layout {
   display: flex;
   align-items: flex-start;
@@ -762,6 +863,11 @@ main {
 
 .photo-panel {
   flex: 0 0 220px;
+  /* Without this, a flex item's automatic minimum width is its
+     content's un-wrapped width -- so the "Current Leader" label
+     below (which used to force itself onto one line) could stretch
+     this whole column, and the photo with it, well past 220px. */
+  min-width: 0;
 }
 
 .photo-panel img {
@@ -808,7 +914,7 @@ main {
    (see .laurel-stem / .laurel-leaf), just re-sized to flank the
    "Current Leader" label instead. */
 .leader-wreath {
-  width: clamp(30px, 9vw, 54px);
+  width: clamp(24px, 5.5vw, 28px);
   height: auto;
   flex-shrink: 0;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
@@ -825,12 +931,11 @@ main {
 .leader-label {
   font-family: "Goudy Stout", "Rammetto One", "Anton", Impact, sans-serif;
   font-weight: 400;
-  font-size: clamp(1.9rem, 10vw, 2.9rem);
+  font-size: clamp(1.05rem, 3.4vw, 1.3rem);
   letter-spacing: 0.01em;
-  line-height: 1.05;
+  line-height: 1.1;
   color: #f1f2ee;
   text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
-  white-space: nowrap;
 }
 
 .leader-name {
@@ -1040,12 +1145,14 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   transform: translateY(18px) scale(0.92);
 }
 
+/* Plain white paper + a solid black outline, like a classic Windows
+   98 "new mail" desktop icon rather than a fancy wax-sealed letter --
+   no cream/yellow tint, no seal, sharp corners. */
 .envelope-back {
   position: absolute;
   inset: 0;
-  background: linear-gradient(155deg, #ecdfc0, #d9c89e);
-  border: 2px solid #8a7548;
-  border-radius: 4px;
+  background: #fdfdfd;
+  border: 3px solid #000;
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
 }
 
@@ -1056,8 +1163,8 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(20deg, transparent 48%, rgba(138, 117, 72, 0.55) 49%, transparent 50%),
-    linear-gradient(-20deg, transparent 48%, rgba(138, 117, 72, 0.55) 49%, transparent 50%);
+    linear-gradient(20deg, transparent 48%, rgba(0, 0, 0, 0.4) 49%, transparent 50%),
+    linear-gradient(-20deg, transparent 48%, rgba(0, 0, 0, 0.4) 49%, transparent 50%);
   background-size: 100% 65%;
   background-position: top;
   background-repeat: no-repeat;
@@ -1069,26 +1176,14 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   left: 0;
   right: 0;
   height: 58%;
-  background: linear-gradient(155deg, #f3e8c9, #e0d0a4);
-  border: 2px solid #8a7548;
+  background: #fdfdfd;
+  border: 3px solid #000;
   border-top: none;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center;
   transform: rotateX(0deg);
   backface-visibility: hidden;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-.envelope-seal {
-  position: absolute;
-  top: 42%;
-  left: 50%;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle at 35% 30%, #c94b3a, #8f2c1f);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 .commish-letter {
