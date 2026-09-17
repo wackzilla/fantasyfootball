@@ -65,6 +65,11 @@ body {
   font-size: clamp(2.2rem, 6vw, 3.4rem);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  /* Honors an actual line break typed into the Page Title cell (Alt+Enter
+     in Google Sheets/Excel) as a real line break here, instead of the
+     browser collapsing it to a space and wrapping wherever it feels like.
+     Long lines still wrap normally on their own if they don't fit. */
+  white-space: pre-line;
   /* Sits directly on the stadium backdrop rather than inside a card, so
      it's given a fixed light color + a solid dark shadow (in addition to
      the decorative flag-colored glow) to stay legible over both the dark
