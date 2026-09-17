@@ -13,6 +13,8 @@
   --silver-text: #2e3238;
   --bronze-bg: #dda06a;
   --bronze-text: #3a2410;
+  --poop-bg: #6b4423;
+  --poop-text: #ffffff;
 }
 
 * { box-sizing: border-box; }
@@ -547,6 +549,7 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
 .place-badge.place-1 { background: var(--gold-bg); color: var(--gold-text); }
 .place-badge.place-2 { background: var(--silver-bg); color: var(--silver-text); }
 .place-badge.place-3 { background: var(--bronze-bg); color: var(--bronze-text); }
+.place-badge.place-last { background: var(--poop-bg); color: var(--poop-text); }
 
 /* Season-total trophies (top 3 overall, always follows sort order) */
 .trophy-badge {
@@ -562,6 +565,7 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
 .trophy-badge.trophy-1 { background: var(--gold-bg); color: var(--gold-text); }
 .trophy-badge.trophy-2 { background: var(--silver-bg); color: var(--silver-text); }
 .trophy-badge.trophy-3 { background: var(--bronze-bg); color: var(--bronze-text); }
+.trophy-badge.trophy-last { background: var(--poop-bg); color: var(--poop-text); }
 
 /* Commish message — a Windows 98-style email window, deliberately a
    fixed retro look regardless of site theme (light or dark), since

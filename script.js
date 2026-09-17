@@ -387,6 +387,30 @@ function renderStandings(rows, head, body) {
     return a.name.localeCompare(b.name);
   });
 
+  // For each contest column, the worst (highest-numbered) place anyone
+  // got that week — used to mark that cell with a poop badge instead of
+  // a plain place, below. Only counts as "last place" when it's outside
+  // the medal range (4th or worse); with 3 or fewer coaches, whoever
+  // finished last already has a medal, so there's no separate poop
+  // badge to add. Ties for last all get marked, same as the medals.
+  const lastPlaceByCol = {};
+  visibleContestColumns.forEach(cc => {
+    let worst = 0;
+    rowsData.forEach(row => {
+      const cell = row.weekCells.find(c => c.colIndex === cc.colIndex);
+      if (cell && cell.place && cell.place > worst) worst = cell.place;
+    });
+    lastPlaceByCol[cc.colIndex] = worst > 3 ? worst : null;
+  });
+
+  // The single worst season Total gets a poop badge too — but only if
+  // exactly one coach has it. A tie for last means no one gets singled
+  // out. Same medal-range exception as above: with 3 or fewer coaches,
+  // last place already has a trophy.
+  const totals = rowsData.map(row => row.total);
+  const worstTotal = totals.length ? Math.min(...totals) : null;
+  const worstTotalIsUnique = worstTotal !== null && totals.filter(t => t === worstTotal).length === 1;
+
   // Whoever ends up on top after sorting is the "Current Leader" —
   // shown with their own standings/podium photo (or no panel at all,
   // if they don't have one), automatically following the points lead
@@ -447,9 +471,14 @@ function renderStandings(rows, head, body) {
     nameTd.appendChild(nameSpan);
 
     const weekTds = row.weekCells
-      .map(cell => `<td class="week-cell">${cell.place ? placeCellHtml(cell.place) : "&ndash;"}</td>`)
+      .map(cell => {
+        if (!cell.place) return `<td class="week-cell">&ndash;</td>`;
+        const isLast = lastPlaceByCol[cell.colIndex] !== null && cell.place === lastPlaceByCol[cell.colIndex];
+        return `<td class="week-cell">${placeCellHtml(cell.place, isLast)}</td>`;
+      })
       .join("");
-    const totalTd = `<td class="total-cell">${totalCellHtml(row.total, rank)}</td>`;
+    const isWorstTotal = rank > 3 && worstTotalIsUnique && row.total === worstTotal;
+    const totalTd = `<td class="total-cell">${totalCellHtml(row.total, rank, isWorstTotal)}</td>`;
 
     tr.appendChild(nameTd);
     tr.insertAdjacentHTML("beforeend", weekTds + totalTd);
@@ -565,21 +594,33 @@ function showMessage(body, text) {
 }
 
 // A week's place cell: top 3 finishers get a colored ribbon badge with a
-// medal; everyone else just gets the plain ordinal (1st, 2nd, 3rd, 4th...).
-function placeCellHtml(place) {
+// medal; whoever finished last that week (isLast, from renderStandings —
+// only set for 4th place or worse, so it never overlaps a medal) gets a
+// brown badge with a poop emoji instead; everyone else just gets the
+// plain ordinal (1st, 2nd, 3rd, 4th...).
+function placeCellHtml(place, isLast) {
   const label = ordinal(place);
   if (place >= 1 && place <= 3) {
     const medal = { 1: "\u{1F947}", 2: "\u{1F948}", 3: "\u{1F949}" }[place];
     return `<span class="place-badge place-${place}">${medal} ${label}</span>`;
   }
+  if (isLast) {
+    return `<span class="place-badge place-last">\u{1F4A9} ${label}</span>`;
+  }
   return label;
 }
 
-// The Total cell for the top 3 coaches overall gets a trophy badge;
-// everyone else just gets the plain number.
-function totalCellHtml(total, rank) {
+// The Total cell for the top 3 coaches overall gets a trophy badge; the
+// single coach with the worst season total (isWorstTotal, from
+// renderStandings — unset if there's a tie for last, or if there are 3
+// or fewer coaches total) gets a brown poop badge; everyone else just
+// gets the plain number.
+function totalCellHtml(total, rank, isWorstTotal) {
   if (rank >= 1 && rank <= 3) {
     return `<span class="trophy-badge trophy-${rank}">\u{1F3C6} ${total}</span>`;
+  }
+  if (isWorstTotal) {
+    return `<span class="trophy-badge trophy-last">\u{1F4A9} ${total}</span>`;
   }
   return total;
 }
