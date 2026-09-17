@@ -830,23 +830,26 @@ main {
 }
 
 .standings-door-wrap.door-play .standings-door-top {
-  animation: standings-door-open-up 0.9s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+  animation: standings-door-open-up 1.8s cubic-bezier(0.6, 0, 0.3, 1) 0.6s forwards;
 }
 
 .standings-door-wrap.door-play .standings-door-bottom {
-  animation: standings-door-open-down 0.9s cubic-bezier(0.6, 0, 0.3, 1) forwards;
+  animation: standings-door-open-down 1.8s cubic-bezier(0.6, 0, 0.3, 1) 0.6s forwards;
 }
 
+/* Both end a hair past a plain -100%/100% (and fade out right at the
+   very end) so no sliver of the hazard-stripe seam is left peeking
+   past the wrap's overflow:hidden edge from sub-pixel rounding. */
 @keyframes standings-door-open-up {
-  to {
-    transform: translateY(-100%);
-  }
+  0% { transform: translateY(0); opacity: 1; }
+  92% { transform: translateY(-108%); opacity: 1; }
+  100% { transform: translateY(-112%); opacity: 0; }
 }
 
 @keyframes standings-door-open-down {
-  to {
-    transform: translateY(100%);
-  }
+  0% { transform: translateY(0); opacity: 1; }
+  92% { transform: translateY(108%); opacity: 1; }
+  100% { transform: translateY(112%); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1156,34 +1159,28 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
 }
 
-.envelope-back::before {
-  /* The two diagonal "inner fold" seams every envelope back has,
-     meeting at the flap's point. */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(20deg, transparent 48%, rgba(0, 0, 0, 0.4) 49%, transparent 50%),
-    linear-gradient(-20deg, transparent 48%, rgba(0, 0, 0, 0.4) 49%, transparent 50%);
-  background-size: 100% 65%;
-  background-position: top;
-  background-repeat: no-repeat;
-}
-
+/* The flap's triangular shape + its diagonal fold lines are drawn by
+   an actual SVG polygon (below) rather than a CSS clip-path + border
+   -- clip-path trims a box's rectangular border along with the box,
+   it doesn't add a border tracing the new cut edges, so that earlier
+   approach silently drew no visible diagonal line at all. The div
+   here just positions that SVG and carries the 3D rotateX flip. */
 .envelope-flap {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   height: 58%;
-  background: #fdfdfd;
-  border: 3px solid #000;
-  border-top: none;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
   transform-origin: top center;
   transform: rotateX(0deg);
   backface-visibility: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.envelope-flap svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
 }
 
 .commish-letter {
