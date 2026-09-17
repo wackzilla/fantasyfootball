@@ -100,7 +100,7 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // Each contest column's header can say whatever you want — it
 // doesn't have to say "Week N". Rename a column's header cell to
 // "NFL Season Opener", "Wild Card Round", or anything else, and the
-// standings table and "This Week's Podium" heading both show that
+// standings table and "Most Recent Podium" heading both show that
 // exact text, no code changes needed.
 //
 // Optionally, add rows ABOVE the "Coach" row to control the page
@@ -143,7 +143,7 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // row out (or the cell blank) to hide that section entirely.
 //
 // Winner Quote is optional too — add it to show an italicized, quoted
-// line centered under "This Week's Podium" (e.g. Winner Quote |
+// line centered under "Most Recent Podium" (e.g. Winner Quote |
 // That was one for the ages! -- tateboyce), flanked by a pair of gold
 // laurel branches. It shows/hides along with the podium itself, so
 // there's no need to clear it out between weeks if you'd rather just
@@ -156,9 +156,9 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //
 // Loser Quote is the Dumpster's equivalent of Winner Quote — optional,
 // shows an italicized, quoted line under The Dumpster (e.g. Loser
-// Quote | I'll get 'em next week... -- DaBears4141), with a little
-// stink cloud rising off the top of the box instead of laurels. Shows/
-// hides along with The Dumpster itself.
+// Quote | I'll get 'em next week... -- DaBears4141), with a swirling
+// greenish gas haze inside the box instead of laurels. Shows/hides
+// along with The Dumpster itself.
 //
 // There's no "League Leader" row anymore — the wide photo above the
 // standings table now automatically follows whoever's actually on
@@ -171,7 +171,7 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // up automatically from each coach's name (see PHOTOS, above). A
 // coach named "allydee18" just needs a photo uploaded as
 // profpic_allydee18, and it'll show up next to their name in the
-// table, on "This Week's Podium" whenever they finish 1st/2nd/3rd,
+// table, on "Most Recent Podium" whenever they finish 1st/2nd/3rd,
 // and above the standings table whenever they're the season leader.
 // No matching photo file? They just get a default silhouette instead
 // (or, for the Current Leader panel, no photo at all) — totally

@@ -100,6 +100,43 @@ function applyCommishMessage(commish) {
   text.textContent = commish.message;
   subject.textContent = commish.subject || "League Update";
   section.hidden = false;
+  armCommishEnvelope();
+}
+
+// Makes the Commish's message "arrive" in a little envelope that flies
+// onto the page and pops its flap open as you scroll down to it (see
+// .commish-envelope-wrap / .envelope in style.css for the actual fly-
+// in/open/reveal animation). Skips itself entirely -- leaving the
+// message window just sitting there, visible right away -- if the
+// browser doesn't support IntersectionObserver or the visitor has
+// motion reduced; the CSS only hides the window and shows the
+// envelope once the "js-envelope-armed" class below is added, so
+// doing nothing here is a safe, fully-visible fallback rather than a
+// half-broken one.
+function armCommishEnvelope() {
+  const wrap = document.getElementById("commish-envelope-wrap");
+  if (!wrap || !("IntersectionObserver" in window)) return;
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    return;
+  }
+
+  wrap.classList.add("js-envelope-armed");
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          wrap.classList.add("envelope-play");
+          observer.disconnect();
+        }
+      });
+    },
+    { threshold: 0.35 }
+  );
+  observer.observe(wrap);
 }
 
 // Shows the photo panel with the current points leader's own photo —
@@ -527,7 +564,7 @@ function renderStandings(rows, head, body) {
   });
 }
 
-// Builds the "This Week's Podium" section: the 1st/2nd/3rd place
+// Builds the "Most Recent Podium" section: the 1st/2nd/3rd place
 // finishers of the most recently played contest (the rightmost visible
 // contest column on the sheet), each with their photo (looked up from
 // their name, or overridden by the sheet's optional Photo column) — or
