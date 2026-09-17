@@ -597,6 +597,26 @@ function buildPodiumSlot(place, row) {
     photoWrap.appendChild(makeSilhouette("podium-photo podium-silhouette"));
   }
 
+  // 1st place only gets the slow-pulsing lens-flare glint over their
+  // photo — a little extra shine for the winner.
+  if (place === 1) {
+    photoWrap.insertAdjacentHTML("beforeend", `
+      <svg class="lens-flare lens-flare-podium" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <radialGradient id="flareGlowPodium" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+            <stop offset="14%" stop-color="#ffe9a8" stop-opacity="0.4"/>
+            <stop offset="34%" stop-color="#ffe9a8" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="50" fill="url(#flareGlowPodium)"/>
+        <path class="flare-star" d="M50,10 L54,46 L90,50 L54,54 L50,90 L46,54 L10,50 L46,46 Z"/>
+        <circle class="flare-dot" cx="72" cy="28" r="3"/>
+        <circle class="flare-dot" cx="26" cy="68" r="1.8"/>
+      </svg>
+    `);
+  }
+
   const name = document.createElement("div");
   name.className = "podium-name";
   name.textContent = row.name;

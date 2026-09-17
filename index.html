@@ -56,6 +56,19 @@
         <p class="winner-quote-card">
           <span class="winner-quote-label">Winner's Quote:</span>
           <span id="winner-quote-text" class="winner-quote-text"></span>
+          <svg class="lens-flare lens-flare-quote" viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <radialGradient id="flareGlowQuote" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+                <stop offset="14%" stop-color="#ffe9a8" stop-opacity="0.4"/>
+                <stop offset="34%" stop-color="#ffe9a8" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="50" cy="50" r="50" fill="url(#flareGlowQuote)"/>
+            <path class="flare-star" d="M50,10 L54,46 L90,50 L54,54 L50,90 L46,54 L10,50 L46,46 Z"/>
+            <circle class="flare-dot" cx="72" cy="28" r="3"/>
+            <circle class="flare-dot" cx="26" cy="68" r="1.8"/>
+          </svg>
         </p>
         <svg class="laurel laurel-right" viewBox="-25 -5 90 135" aria-hidden="true">
           <path class="laurel-stem" d="M46.0,122.0 C-4.0,104.0 -2.0,24.0 16.0,6.0"/>
@@ -112,17 +125,15 @@
         <div class="dumpster-name" id="dumpster-name"></div>
       </div>
       <div id="loser-quote" class="loser-quote-wrap" hidden>
-        <svg class="stink-cloud" viewBox="0 -6 120 96" aria-hidden="true">
-          <rect x="14" y="60" width="92" height="26" rx="10" class="stink-fill"/>
-          <ellipse cx="26" cy="62" rx="18" ry="16" class="stink-fill"/>
-          <ellipse cx="94" cy="62" rx="18" ry="16" class="stink-fill"/>
-          <ellipse cx="42" cy="48" rx="16" ry="15" class="stink-fill-light"/>
-          <ellipse cx="66" cy="44" rx="18" ry="16" class="stink-fill-light"/>
-          <ellipse cx="88" cy="50" rx="15" ry="14" class="stink-fill-light"/>
-          <ellipse cx="20" cy="52" rx="13" ry="12" class="stink-fill-light"/>
-          <path class="stink-outline" d="M32,50 C20,40 42,32 30,22 C18,12 40,7 32,-2"/>
-          <path class="stink-outline" d="M60,44 C48,34 70,27 58,17 C46,7 68,2 60,-6"/>
-          <path class="stink-outline" d="M88,50 C76,40 98,32 86,22 C74,12 96,7 88,-2"/>
+        <svg class="stink-cloud" viewBox="0 0 400 56" preserveAspectRatio="none" aria-hidden="true">
+          <rect x="0" y="30" width="400" height="26" rx="13" class="stink-fill"/>
+          <ellipse cx="30" cy="34" rx="42" ry="26" class="stink-fill"/>
+          <ellipse cx="370" cy="34" rx="42" ry="26" class="stink-fill"/>
+          <ellipse cx="90" cy="24" rx="40" ry="24" class="stink-fill-light"/>
+          <ellipse cx="200" cy="18" rx="46" ry="26" class="stink-fill-light"/>
+          <ellipse cx="310" cy="24" rx="40" ry="24" class="stink-fill-light"/>
+          <ellipse cx="145" cy="28" rx="34" ry="22" class="stink-fill"/>
+          <ellipse cx="255" cy="28" rx="34" ry="22" class="stink-fill"/>
         </svg>
         <p class="loser-quote-card">
           <span class="loser-quote-label">Loser's Quote:</span>
