@@ -213,10 +213,6 @@
 
     <div class="section-divider" aria-hidden="true">🏈 🏈 🏈 🏈 🏈</div>
 
-    <div class="standings-door-wrap" id="standings-door-wrap">
-      <div class="standings-door standings-door-top" aria-hidden="true"></div>
-      <div class="standings-door standings-door-bottom" aria-hidden="true"></div>
-      <span class="standings-door-label" aria-hidden="true">The Standings</span>
     <div class="standings-layout">
       <aside id="photo-panel" class="photo-panel" hidden>
         <div class="leader-block">
@@ -249,22 +245,26 @@
         </div>
         <img id="team-photo" src="" alt="">
       </aside>
-      <section class="standings-section">
-        <h2 class="standings-heading">
-          <span class="standings-heading-inner">Season Standings<span class="lens-flare lens-flare-heading" aria-hidden="true"></span></span>
-        </h2>
-        <p class="legend">
-          Each cell shows the place a coach finished that week.<br>
-          🥇 1st = 5 pts &middot; 🥈 2nd = 3 pts &middot; 🥉 3rd = 1 pt
-        </p>
-        <div class="table-scroll">
-          <table id="standings-table">
-            <thead id="standings-head"></thead>
-            <tbody id="standings-body"></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
+      <div class="standings-door-wrap" id="standings-door-wrap">
+        <div class="standings-door standings-door-top" aria-hidden="true"></div>
+        <div class="standings-door standings-door-bottom" aria-hidden="true"></div>
+        <span class="standings-door-label" aria-hidden="true">The Standings</span>
+        <section class="standings-section">
+          <h2 class="standings-heading">
+            <span class="standings-heading-inner">Season Standings</span>
+          </h2>
+          <p class="legend">
+            Each cell shows the place a coach finished that week.<br>
+            🥇 1st = 5 pts &middot; 🥈 2nd = 3 pts &middot; 🥉 3rd = 1 pt
+          </p>
+          <div class="table-scroll">
+            <table id="standings-table">
+              <thead id="standings-head"></thead>
+              <tbody id="standings-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
     </div>
   </main>
 

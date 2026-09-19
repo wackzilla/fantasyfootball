@@ -379,12 +379,17 @@ main {
 
 /* A slow diagonal "sheen" that sweeps all the way across the item,
    then pauses off to the side before sweeping again — used on the 1st
-   place podium photo and on the Winner's Quote card. It's a single
+   place podium photo and on the Winner's Quote card (both opaque
+   surfaces, so an overlay box reads fine on them). It's a single
    bright diagonal band (::before), clipped to the item's own shape by
    overflow:hidden on this wrapper, and screen-blended so it brightens
    whatever's underneath rather than whiting it out. Each usage below
    sets its own shape/size and a slightly different animation-delay so
-   the two don't sweep in lockstep. */
+   the two don't sweep in lockstep. (The "Season Standings" heading
+   used to reuse this too, but as see-through gradient text rather
+   than a solid surface, the overlay's own box showed as a visible
+   rectangle outside the letters -- it now gets its shine a different
+   way, see .standings-heading-inner below.) */
 .lens-flare {
   position: absolute;
   inset: 0;
@@ -776,23 +781,36 @@ main {
   }
 }
 
-/* The standings (photo panel + table together) open like a pair of
-   mechanical bay doors as you scroll down to them: two metal panels
-   meet in the middle over the content, then slide apart -- top one
-   up, bottom one down -- to reveal it. script.js only arms this
-   (.js-door-armed, which is what actually hides the doors' content
-   underneath up front) once the standings have real rows in them,
-   and only when JS + IntersectionObserver + prefers-reduced-motion
-   all allow it, so with JS off or motion reduced the table's just
-   there already -- no doors, nothing to trip over. */
+/* The standings table (heading, legend and table -- NOT the Current
+   Leader photo panel next to it) opens like a pair of mechanical bay
+   doors as you scroll down to it: two metal panels meet in the
+   middle over the content, then slide apart -- top one up, bottom
+   one down -- to reveal it. script.js only arms this (.js-door-armed,
+   which is what actually hides the doors' content underneath up
+   front) once the standings have real rows in them, and only when
+   JS + IntersectionObserver + prefers-reduced-motion all allow it,
+   so with JS off or motion reduced the table's just there already --
+   no doors, nothing to trip over. This is now the direct flex child
+   of .standings-layout (the Current Leader photo panel is the other
+   one, sitting outside the doors), so it carries the same
+   flex-sizing/shrink rules .standings-section used to have on its
+   own -- see below. */
 .standings-door-wrap {
   position: relative;
   overflow: hidden;
-  /* Belt-and-suspenders: this wrap itself isn't pointer-events:none
-     (its in-flow content needs to stay clickable/scrollable), so
-     spell out that vertical panning/scrolling should always be
-     allowed through it — never captured by the door animation. */
-  touch-action: pan-y;
+  flex: 1 1 auto;
+  min-width: 0;
+  /* NOTE: deliberately no touch-action override here. A touch-action
+     set on this wrap would also constrain its descendants (per spec,
+     the effective touch-action of an element is the intersection of
+     its own and all its ancestors' values) -- an earlier pan-y-only
+     version of this rule ended up blocking horizontal swipes on the
+     .table-scroll box nested inside, so the standings table couldn't
+     be scrolled sideways on mobile. Leaving this at the default
+     (auto) lets normal scrolling -- vertical page scroll AND
+     horizontal table scroll -- pass through untouched; the doors
+     never capture pointer events themselves since they're
+     pointer-events:none (see .standings-door below).  */
 }
 
 .standings-door {
@@ -1068,13 +1086,28 @@ main {
 }
 
 .standings-section {
-  flex: 1 1 auto;
+  /* .standings-door-wrap (its new parent) is the actual flex child of
+     .standings-layout now and carries the flex/min-width rules this
+     used to have -- this just needs to fill that wrapper. */
+  width: 100%;
   min-width: 0;
 }
 
 @media (max-width: 700px) {
   .standings-layout {
     flex-direction: column;
+    /* The row layout's align-items: flex-start (above) is meant for
+       sitting the photo panel and standings section side by side --
+       in column mode it has the side effect of letting a flex child
+       size itself to its own content's width instead of the
+       container's width, so a wide table could grow the whole
+       section past the screen edge (clipped by
+       .standings-door-wrap's overflow:hidden, with nothing left to
+       actually scroll). Stretching instead keeps every child pinned
+       to the container's actual width, so .table-scroll's own
+       overflow-x: auto is what handles a too-wide table, not the
+       page silently growing offscreen. */
+    align-items: stretch;
   }
 
   .photo-panel {
@@ -1091,11 +1124,13 @@ main {
 }
 
 /* Shiny gold "Season Standings" heading — a vertical gold-foil gradient
-   clipped to the text for the shine, plus the same lens-flare sweep
-   (see above) clipped to just the heading's own box for the animated
-   gleam, so it matches the Winner's Quote card's treatment. */
+   clipped to the text for the fill, plus a diagonal sweep of light
+   layered as a SECOND background image on this same element (rather
+   than a separate overlay box, like the Winner's Quote card uses) --
+   background-clip: text applies to every background layer here, so
+   the moving sweep is clipped to the letter shapes themselves and
+   never shows as a rectangle outside them. */
 .standings-heading-inner {
-  position: relative;
   display: inline-block;
   padding: 2px 6px;
   font-family: "Anton", "Arial Narrow", Impact, sans-serif;
@@ -1103,24 +1138,47 @@ main {
   font-size: clamp(1.6rem, 6vw, 2.3rem);
   letter-spacing: 0.03em;
   text-transform: uppercase;
-  background: linear-gradient(
-    180deg,
-    #fff8dc 0%,
-    #f4dfa0 15%,
-    #e0b52c 35%,
-    #a8790a 55%,
-    #e0b52c 75%,
-    #fff8dc 100%
-  );
+  background-image:
+    linear-gradient(
+      100deg,
+      transparent 0%,
+      transparent 42%,
+      rgba(255, 255, 255, 0.95) 50%,
+      rgba(255, 233, 168, 0.65) 58%,
+      transparent 68%,
+      transparent 100%
+    ),
+    linear-gradient(
+      180deg,
+      #fff8dc 0%,
+      #f4dfa0 15%,
+      #e0b52c 35%,
+      #a8790a 55%,
+      #e0b52c 75%,
+      #fff8dc 100%
+    );
+  background-size: 300% 100%, 100% 100%;
+  background-position: -120% 0, 0 0;
+  background-repeat: no-repeat;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
+  animation: standings-heading-shine 5s ease-in-out infinite;
 }
 
-.lens-flare-heading::before {
-  animation-delay: 0.8s;
+@keyframes standings-heading-shine {
+  0% { background-position: -120% 0, 0 0; }
+  50% { background-position: 220% 0, 0 0; }
+  100% { background-position: 220% 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .standings-heading-inner {
+    animation: none;
+    background-position: 0 0, 0 0;
+  }
 }
 
 .legend {

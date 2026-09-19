@@ -167,9 +167,10 @@ function armCommishEnvelope() {
   observer.observe(wrap);
 }
 
-// Makes the standings (photo panel + table) open like a pair of
+// Makes the standings table (heading, legend and table -- not the
+// Current Leader photo panel next to it) open like a pair of
 // mechanical bay doors -- meeting in the middle, then sliding apart,
-// top one up and bottom one down -- as you scroll down to them (see
+// top one up and bottom one down -- as you scroll down to it (see
 // .standings-door-wrap / .standings-door in style.css for the actual
 // animation). Only runs once per page load (loadStandings only calls
 // this after a successful render, and that only happens once), and
