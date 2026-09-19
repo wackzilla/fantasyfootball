@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fantasy Contest Standings</title>
+<title>WackLabs</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Rammetto+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Rammetto+One&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <header class="site-header">
-    <h1 id="league-name">Viva la Fútbol</h1>
-    <p id="page-subtitle" class="subtitle">¡Vámonos! Fútbol season is here.</p>
+    <h1 id="league-name"></h1>
+    <p id="page-subtitle" class="subtitle"></p>
   </header>
 
   <div id="banner" class="banner" hidden>
@@ -170,6 +170,7 @@
     <div class="standings-door-wrap" id="standings-door-wrap">
       <div class="standings-door standings-door-top" aria-hidden="true"></div>
       <div class="standings-door standings-door-bottom" aria-hidden="true"></div>
+      <span class="standings-door-label" aria-hidden="true">The Standings</span>
     <div class="standings-layout">
       <aside id="photo-panel" class="photo-panel" hidden>
         <div class="leader-block">
@@ -203,7 +204,9 @@
         <img id="team-photo" src="" alt="">
       </aside>
       <section class="standings-section">
-        <h2>Season Standings</h2>
+        <h2 class="standings-heading">
+          <span class="standings-heading-inner">Season Standings<span class="lens-flare lens-flare-heading" aria-hidden="true"></span></span>
+        </h2>
         <p class="legend">
           Each cell shows the place a coach finished that week.<br>
           🥇 1st = 5 pts &middot; 🥈 2nd = 3 pts &middot; 🥉 3rd = 1 pt

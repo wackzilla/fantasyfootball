@@ -3,9 +3,11 @@
 // and your coaches + weekly results live in your Google Sheet.
 
 document.addEventListener("DOMContentLoaded", () => {
-  // League name
+  // League name (shown on the page). The browser tab itself always
+  // just says "WackLabs" — set once in index.html's <title> — and
+  // isn't tied to this or to the sheet's Page Title, unlike the
+  // on-page heading below.
   document.getElementById("league-name").textContent = LEAGUE_NAME;
-  document.title = LEAGUE_NAME + " — Standings";
 
   // Show the banner from data.js immediately (no flash of "no banner").
   // If the sheet defines its own Banner rows, loadStandings() below will
@@ -428,7 +430,6 @@ function applyPageMeta(meta) {
   if (meta && meta.title) {
     const titleEl = document.getElementById("league-name");
     if (titleEl) titleEl.textContent = meta.title;
-    document.title = meta.title + " — Standings";
   }
   if (meta && meta.subtitle) {
     const subtitleEl = document.getElementById("page-subtitle");

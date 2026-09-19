@@ -62,21 +62,21 @@ const POINTS_BY_PLACE = {
 //
 // It's looked up automatically from that coach's name in the Coach
 // column — a coach named "DaBears4141" just needs a photo uploaded
-// to the repo as profpic_dabears4141 (all lowercase). The file
-// extension doesn't matter — .jpg, .jpeg, and .png are all tried
-// automatically, so it's fine if a photo happens to save as one type
-// or another. Crop it square with the face centered before
-// uploading, so it doesn't get cut off awkwardly when shown as a
-// circle. No matching photo file? That coach just gets a default
-// silhouette (or, for the Current Leader panel, no photo shown at
-// all) — totally fine, no photo required.
+// to the repo's profpics folder as profpic_dabears4141 (all
+// lowercase). The file extension doesn't matter — .jpg, .jpeg, and
+// .png are all tried automatically, so it's fine if a photo happens
+// to save as one type or another. Crop it square with the face
+// centered before uploading, so it doesn't get cut off awkwardly
+// when shown as a circle. No matching photo file? That coach just
+// gets a default silhouette (or, for the Current Leader panel, no
+// photo shown at all) — totally fine, no photo required.
 //
 // If a coach's photo needs a different name than their Coach cell
 // (or you'd rather paste a full link to a photo hosted elsewhere),
 // you can still add an optional "Photo" column next to Coach and
 // fill it in just for that coach — see GOOGLE SHEET, below.
 // --------------------------------------------------------------
-const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpic_";
+const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fantasyfootball/main/profpics/profpic_";
 
 // --------------------------------------------------------------
 // GOOGLE SHEET
