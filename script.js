@@ -54,12 +54,22 @@ function startBannerCountdown(countdownEl, deadlineValue) {
     return null;
   }
 
+  // Declared before tick() runs (rather than as a const assigned after
+  // the initial tick() call below) so that if the deadline has ALREADY
+  // passed the very first time this runs, tick() can safely check it
+  // instead of crashing trying to clear an interval that doesn't exist
+  // yet.
+  let intervalId = null;
+
   const tick = () => {
     const msLeft = deadline.getTime() - Date.now();
     countdownEl.hidden = false;
     if (msLeft <= 0) {
       countdownEl.textContent = "Contest locked";
-      clearInterval(intervalId);
+      if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
       countdownInterval = null;
       return;
     }
@@ -67,7 +77,11 @@ function startBannerCountdown(countdownEl, deadlineValue) {
   };
 
   tick();
-  const intervalId = setInterval(tick, 1000);
+  // No point starting a ticking interval for a deadline that's already
+  // passed — tick() above already showed "Contest locked".
+  if (deadline.getTime() > Date.now()) {
+    intervalId = setInterval(tick, 1000);
+  }
   return intervalId;
 }
 
