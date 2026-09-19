@@ -141,6 +141,28 @@ body {
   padding: 3px 10px;
   border-radius: 999px;
   white-space: nowrap;
+  transition: font-size 0.15s ease, padding 0.15s ease;
+}
+
+/* Once the deadline passes, script.js swaps the countdown's text for
+   "Contest locked" and adds this class -- bigger pill, flashing to
+   catch the eye, standing in alone since the banner's own "click here
+   to enter" text hides itself at the same time. */
+.banner-countdown-locked {
+  font-size: 1.05rem;
+  padding: 6px 16px;
+  animation: banner-countdown-flash 1.1s ease-in-out infinite;
+}
+
+@keyframes banner-countdown-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner-countdown-locked {
+    animation: none;
+  }
 }
 
 .banner-arrow {
@@ -856,15 +878,15 @@ main {
   top: 50%;
   left: 50%;
   z-index: 6;
-  transform: translate(-50%, -50%) rotate(-3deg);
+  transform: translate(-50%, -50%) rotate(-15deg);
   pointer-events: none;
   display: none;
   font-family: "Permanent Marker", "Segoe Print", "Comic Sans MS", cursive;
-  font-size: clamp(1.6rem, 7vw, 2.8rem);
+  font-size: clamp(2.4rem, 10.5vw, 4.2rem);
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: #f4c430;
+  color: #ffffff;
   /* Layered shadows stand in for a rough spray-can edge: a tight
      black "overspray" ring close to the letters, then a couple of
      softer, offset dark-red passes further out like the can wasn't
@@ -875,19 +897,19 @@ main {
     -1px 1px 0 #1a1a1a,
     1px 1px 0 #1a1a1a,
     0 0 6px rgba(0, 0, 0, 0.55),
-    2px 3px 0 rgba(120, 20, 10, 0.35),
-    -3px 2px 0 rgba(120, 20, 10, 0.25),
-    0 0 18px rgba(244, 196, 48, 0.35);
+    2px 3px 0 rgba(120, 20, 10, 0.3),
+    -3px 2px 0 rgba(120, 20, 10, 0.2),
+    0 0 18px rgba(255, 255, 255, 0.45);
   /* A faint mist of overspray dots bleeding past the letters. */
-  filter: drop-shadow(0 0 10px rgba(244, 196, 48, 0.25));
+  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
 }
 
 .standings-door-label::before {
   content: "";
   position: absolute;
-  inset: -18px -26px;
+  inset: -27px -39px;
   z-index: -1;
-  background-image: radial-gradient(circle, rgba(244, 196, 48, 0.16) 1.5px, transparent 1.6px);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 1.5px, transparent 1.6px);
   background-size: 9px 9px;
   -webkit-mask-image: radial-gradient(ellipse at center, #000 45%, transparent 78%);
   mask-image: radial-gradient(ellipse at center, #000 45%, transparent 78%);
@@ -904,8 +926,8 @@ main {
 }
 
 @keyframes standings-door-label-fade {
-  0% { opacity: 1; transform: translate(-50%, -50%) rotate(-3deg) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-3deg) scale(1.06); }
+  0% { opacity: 1; transform: translate(-50%, -50%) rotate(-15deg) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) rotate(-15deg) scale(1.06); }
 }
 
 @media (max-width: 480px) {
@@ -980,6 +1002,7 @@ main {
 
 .leader-block {
   text-align: center;
+  margin-top: 18px;
   margin-bottom: 10px;
 }
 
@@ -1005,18 +1028,32 @@ main {
   transform: scaleX(-1);
 }
 
-/* The label reads as the "headline" of this panel — bigger and
-   bolder than the leader's own name underneath it, set in Goudy
-   Stout for a stout, trophy-plate feel (falls back to the similarly
-   chunky Rammetto One where Goudy Stout isn't installed locally). */
+/* The label reads as the "headline" of this panel, in the exact same
+   gold-foil treatment as the "Season Standings" heading it sits next
+   to (see .standings-heading-inner) -- same typeface, same gradient,
+   just smaller since this is the secondary panel next to it rather
+   than the section's own heading. */
 .leader-label {
-  font-family: "Goudy Stout", "Rammetto One", "Anton", Impact, sans-serif;
+  font-family: "Anton", "Arial Narrow", Impact, sans-serif;
   font-weight: 400;
   font-size: clamp(1.05rem, 3.4vw, 1.3rem);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.03em;
   line-height: 1.1;
-  color: #f1f2ee;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.85);
+  text-transform: uppercase;
+  background: linear-gradient(
+    180deg,
+    #fff8dc 0%,
+    #f4dfa0 15%,
+    #e0b52c 35%,
+    #a8790a 55%,
+    #e0b52c 75%,
+    #fff8dc 100%
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.45);
 }
 
 .leader-name {
@@ -1288,6 +1325,29 @@ tr.rank-3 .coach-cell { color: #8a4a1c; }
   width: 100%;
   height: 100%;
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+}
+
+/* An original shield seal (red/white/blue, a leaping player silhouette
+   reaching for the ball -- not any real team or league's mark) sitting
+   right where the flap's point meets the envelope. It's a child of the
+   flap itself, so it lifts and rotates away together with it when the
+   letter opens, like a wax seal breaking. */
+.envelope-seal {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 15%;
+  min-width: 34px;
+  max-width: 56px;
+  transform: translate(-50%, 45%);
+  z-index: 2;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.envelope-seal svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .commish-letter {

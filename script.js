@@ -3,11 +3,11 @@
 // and your coaches + weekly results live in your Google Sheet.
 
 document.addEventListener("DOMContentLoaded", () => {
-  // League name (shown on the page). The browser tab itself always
-  // just says "WackLabs" — set once in index.html's <title> — and
-  // isn't tied to this or to the sheet's Page Title, unlike the
-  // on-page heading below.
-  document.getElementById("league-name").textContent = LEAGUE_NAME;
+  // The on-page heading starts blank and is filled in entirely by the
+  // sheet's Page Title once it loads (see applyPageMeta below) — no
+  // hardcoded name here, so there's nothing stale to flash on screen
+  // first. The browser tab itself always just says "WackLabs" — set
+  // once in index.html's <title> — and isn't tied to this at all.
 
   // Show the banner from data.js immediately (no flash of "no banner").
   // If the sheet defines its own Banner rows, loadStandings() below will
@@ -53,6 +53,9 @@ function startBannerCountdown(countdownEl, deadlineValue) {
   if (!deadline || isNaN(deadline.getTime())) {
     countdownEl.hidden = true;
     countdownEl.textContent = "";
+    countdownEl.classList.remove("banner-countdown-locked");
+    const bannerTextEl = document.getElementById("banner-text");
+    if (bannerTextEl) bannerTextEl.hidden = false;
     return null;
   }
 
@@ -63,11 +66,18 @@ function startBannerCountdown(countdownEl, deadlineValue) {
   // yet.
   let intervalId = null;
 
+  const bannerTextEl = document.getElementById("banner-text");
+
   const tick = () => {
     const msLeft = deadline.getTime() - Date.now();
     countdownEl.hidden = false;
     if (msLeft <= 0) {
+      // Once it's locked, "click here to enter" no longer makes sense,
+      // so the banner's own text hides and just the (bigger, flashing)
+      // "Contest locked" pill is left showing.
       countdownEl.textContent = "Contest locked";
+      countdownEl.classList.add("banner-countdown-locked");
+      if (bannerTextEl) bannerTextEl.hidden = true;
       if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
@@ -75,6 +85,8 @@ function startBannerCountdown(countdownEl, deadlineValue) {
       countdownInterval = null;
       return;
     }
+    countdownEl.classList.remove("banner-countdown-locked");
+    if (bannerTextEl) bannerTextEl.hidden = false;
     countdownEl.textContent = "Locks in " + formatCountdown(msLeft);
   };
 

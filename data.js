@@ -4,13 +4,10 @@
 //  not in this file — see the Instructions tab in that sheet.
 // ============================================================
 
-// The name shown at the top of the page (fallback / default). You can
-// instead control the page's title and the line underneath it from
-// your Google Sheet with Page Title / Page Subtitle rows — see GOOGLE
-// SHEET, below. If your sheet has those rows, they override what's set
-// here; this is just what shows before the sheet loads, or if you
-// never add those rows to the sheet at all.
-const LEAGUE_NAME = "Viva la Fútbol";
+// The page's title and the line underneath it are controlled entirely
+// from your Google Sheet, with Page Title / Page Subtitle rows — see
+// GOOGLE SHEET, below. Both start out blank until the sheet loads, so
+// there's nothing hardcoded here to keep in sync with it.
 
 // --------------------------------------------------------------
 // THIS WEEK'S ANNOUNCEMENT BANNER (fallback / default)
@@ -103,10 +100,10 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 // standings table and "Most Recent Podium" heading both show that
 // exact text, no code changes needed.
 //
-// Optionally, add rows ABOVE the "Coach" row to control the page
+// Optionally, add rows ABOVE the "Coach" row to set the page
 // title/subtitle and the banner from the sheet instead of the
-// LEAGUE_NAME/ANNOUNCEMENT settings above, and/or to show a "message
-// from the Commish" text box on the page:
+// ANNOUNCEMENT settings above, and/or to show a "message from the
+// Commish" text box on the page:
 //
 //   Page Title             | Viva la Fútbol
 //   Page Subtitle          | ¡Vámonos! Fútbol season is here.
