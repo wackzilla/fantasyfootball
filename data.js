@@ -183,4 +183,4 @@ const PODIUM_PHOTO_REPO_BASE = "https://raw.githubusercontent.com/wackzilla/fant
 //   allydee18      |                 | 2      |
 //   tateboyce      | tates-real-pic  | 4      |
 // --------------------------------------------------------------
-const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/spreadsheets/d/1GPBjW9IMJ8q-pJR2t3vdVuIqoEWd8rNJ1e98iPr_mS4/export?format=csv&gid=1064215180";
+const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1GPBjW9IMJ8q-pJR2t3vdVuIqoEWd8rNJ1e98iPr_mS4/export?format=csv&gid=1064215180";
